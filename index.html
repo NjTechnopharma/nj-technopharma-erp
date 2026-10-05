@@ -214,7 +214,7 @@
         </div>
       </div>
 
-      <!-- HISTORY (NEW: INVOICES & QUOTATIONS LIST) -->
+      <!-- HISTORY (INVOICES & QUOTATIONS LIST WITH DELETE OPTION) -->
       <div id="history" class="page-section history-container">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <h3>Generated Documents History (Invoices & Quotations)</h3>
@@ -241,7 +241,7 @@
         </table>
       </div>
 
-      <!-- PURCHASE ORDERS -->
+      <!-- PURCHASE ORDERS (WITH DELETE OPTION) -->
       <div id="po" class="page-section">
         <h3>Purchase Orders (PO)</h3>
         <div class="doc-box">
@@ -262,7 +262,7 @@
         <h4 style="margin-top:25px;">Saved Purchase Orders</h4>
         <table id="poTable">
           <thead>
-            <tr><th>PO Number</th><th>Vendor Name</th><th>Item Description</th><th>Qty</th><th>Total Cost</th><th>Status</th></tr>
+            <tr><th>PO Number</th><th>Vendor Name</th><th>Item Description</th><th>Qty</th><th>Total Cost</th><th>Status</th><th>Actions</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -272,6 +272,7 @@
               <td>100 kg</td>
               <td>₹1,50,000.00</td>
               <td><span style="background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:12px;">Pending</span></td>
+              <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deletePO(this)">Delete</button></td>
             </tr>
           </tbody>
         </table>
@@ -607,7 +608,6 @@
         return;
       }
 
-      // Save to History
       documentHistory.push({
         num: docNum,
         category: 'Invoice',
@@ -650,7 +650,7 @@
       window.print();
     }
 
-    // RENDER HISTORY TABLE
+    // RENDER HISTORY TABLE WITH DELETE FUNCTION
     function renderHistoryTable() {
       const filter = document.getElementById('filterType').value;
       const tbody = document.querySelector('#historyTable tbody');
@@ -666,7 +666,8 @@
             <td>${doc.date}</td>
             <td><strong>${doc.total}</strong></td>
             <td class="no-print">
-              <button class="btn btn-info" style="padding:4px 10px; font-size:12px;" onclick="reprintDoc(${idx})"><i class="fa-solid fa-print"></i> Reprint</button>
+              <button class="btn btn-info" style="padding:4px 10px; font-size:12px; margin-right:5px;" onclick="reprintDoc(${idx})"><i class="fa-solid fa-print"></i> Print</button>
+              <button class="btn btn-danger" style="padding:4px 10px; font-size:12px;" onclick="deleteDoc(${idx})"><i class="fa-solid fa-trash"></i> Delete</button>
             </td>
           `;
         }
@@ -679,7 +680,16 @@
       window.print();
     }
 
-    // PURCHASE ORDER LOGIC
+    function deleteDoc(index) {
+      if (confirm("Kya aap sach mein is Invoice / Quotation ko delete karna chahte hain?")) {
+        documentHistory.splice(index, 1);
+        renderHistoryTable();
+        document.getElementById('statDocCount').innerText = documentHistory.length;
+        alert("Document successfully delete ho gaya hai!");
+      }
+    }
+
+    // PURCHASE ORDER LOGIC WITH DELETE
     function addPO() {
       const vendor = document.getElementById('poVendor').value.trim();
       const num = document.getElementById('poNum').value.trim();
@@ -702,6 +712,7 @@
         <td>${qty}</td>
         <td>₹${total.toFixed(2)}</td>
         <td><span style="background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:12px;">Pending</span></td>
+        <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deletePO(this)">Delete</button></td>
       `;
 
       document.getElementById('poVendor').value = '';
@@ -710,6 +721,13 @@
       document.getElementById('poRate').value = '';
 
       alert(`Purchase Order ${num} created successfully!`);
+    }
+
+    function deletePO(btn) {
+      if (confirm("Kya aap is Purchase Order ko delete karna chahte hain?")) {
+        btn.closest('tr').remove();
+        alert("Purchase Order delete ho gaya hai!");
+      }
     }
 
     // PAYMENTS ENTRY
