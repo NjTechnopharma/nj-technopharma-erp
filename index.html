@@ -1,130 +1,162 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+import { Request, Response } from 'express';
+import { PrismaClient, InvoiceStatus } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+interface InvoiceItemInput {
+  productId: string;
+  quantity: number;
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
+// 1. Create New Invoice with Automatic GST & Inventory Calculation
+export const createInvoice = async (req: Request, res: Response) => {
+  try {
+    const { clientId, createdById, dueDate, currency, items, discount = 0 } = req.body;
 
-// User & Role Management
-enum Role {
-  ADMIN
-  ACCOUNTANT
-  SALES
-}
+    let subtotal = 0;
+    let totalTax = 0;
+    const invoiceItemsData = [];
 
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(ACCOUNTANT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    // Calculate totals & verify stock availability
+    for (const item of items as InvoiceItemInput[]) {
+      const product = await prisma.product.findUnique({ where: { id: item.productId } });
 
-  invoices Invoice[]
-}
+      if (!product) {
+        return res.status(404).json({ error: `Product not found: ${item.productId}` });
+      }
 
-// Client / Customer Management
-model Client {
-  id          String    @id @default(uuid())
-  name        String
-  companyName String?
-  email       String    @unique
-  phone       String?
-  gstin       String?   // GST Number for compliance
-  address     String?
-  creditLimit Float     @default(0.0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+      if (product.stockQty < item.quantity) {
+        return res.status(400).json({ error: `Insufficient stock for product: ${product.name}` });
+      }
 
-  invoices Invoice[]
-}
+      const itemSubtotal = product.unitPrice * item.quantity;
+      const itemTax = (itemSubtotal * product.gstRate) / 100;
+      const itemTotal = itemSubtotal + itemTax;
 
-// Product / Inventory Management
-model Product {
-  id          String   @id @default(uuid())
-  sku         String   @unique
-  name        String
-  description String?
-  unitPrice   Float
-  gstRate     Float    @default(18.0) // GST Percentage (e.g. 5, 12, 18, 28)
-  stockQty    Int      @default(0)
-  minStockAlert Int    @default(5)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+      subtotal += itemSubtotal;
+      totalTax += itemTax;
 
-  invoiceItems InvoiceItem[]
-}
+      invoiceItemsData.push({
+        productId: product.id,
+        quantity: item.quantity,
+        unitPrice: product.unitPrice,
+        gstRate: product.gstRate,
+        taxAmount: itemTax,
+        total: itemTotal,
+      });
+    }
 
-// Invoice Management
-enum InvoiceStatus {
-  DRAFT
-  PENDING
-  PAID
-  OVERDUE
-  CANCELLED
-}
+    const finalTotal = subtotal + totalTax - discount;
 
-model Invoice {
-  id            String        @id @default(uuid())
-  invoiceNumber String        @unique // e.g. INV-2026-0001
-  clientId      String
-  client        Client        @relation(fields: [clientId], references: [id])
-  createdById   String
-  createdBy     User          @relation(fields: [createdById], references: [id])
-  
-  status        InvoiceStatus @default(PENDING)
-  issueDate     DateTime      @default(now())
-  dueDate       DateTime
-  currency      String        @default("INR")
-  
-  subtotal      Float
-  taxAmount     Float         // Calculated GST Amount
-  discount      Float         @default(0.0)
-  totalAmount   Float
-  paidAmount    Float         @default(0.0)
+    // Generate unique Invoice Number (e.g. INV-2026-0001)
+    const count = await prisma.invoice.count();
+    const invoiceNumber = `INV-2026-${String(count + 1).padStart(4, '0')}`;
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+    // Database Transaction: Create Invoice + Reduce Stock Quantity
+    const newInvoice = await prisma.$transaction(async (tx) => {
+      // Create Invoice
+      const invoice = await tx.invoice.create({
+        data: {
+          invoiceNumber,
+          clientId,
+          createdById,
+          dueDate: new Date(dueDate),
+          currency: currency || 'INR',
+          subtotal,
+          taxAmount: totalTax,
+          discount,
+          totalAmount: finalTotal,
+          status: InvoiceStatus.PENDING,
+          items: {
+            create: invoiceItemsData,
+          },
+        },
+        include: { items: true, client: true },
+      });
 
-  items    InvoiceItem[]
-  payments Payment[]
-}
+      // Deduct Stock Quantity for each product
+      for (const item of items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stockQty: { decrement: item.quantity } },
+        });
+      }
 
-// Line Items inside Invoice
-model InvoiceItem {
-  id        String  @id @default(uuid())
-  invoiceId String
-  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  
-  quantity  Int
-  unitPrice Float
-  gstRate   Float
-  taxAmount Float
-  total     Float
-}
+      return invoice;
+    });
 
-// Payments & Receivables Tracking
-enum PaymentMethod {
-  UPI
-  BANK_TRANSFER
-  CREDIT_CARD
-  CASH
-  CHEQUE
-}
+    return res.status(201).json({ message: 'Invoice created successfully', invoice: newInvoice });
+  } catch (error) {
+    console.error('Error creating invoice:', error);
+    return res.status(500).json({ error: 'Failed to create invoice' });
+  }
+};
 
-model Payment {
-  id            String        @id @default(uuid())
-  invoiceId     String
-  invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  amount        Float
-  paymentDate   DateTime      @default(now())
-  method        PaymentMethod
-  transactionId String?       @unique
-  notes         String?
-  createdAt     DateTime      @default(now())
-}
+// 2. Fetch All Invoices with Filters & Client Details
+export const getInvoices = async (req: Request, res: Response) => {
+  try {
+    const { status, clientId } = req.query;
+
+    const whereClause: any = {};
+    if (status) whereClause.status = status as InvoiceStatus;
+    if (clientId) whereClause.clientId = clientId as string;
+
+    const invoices = await prisma.invoice.findMany({
+      where: whereClause,
+      include: {
+        client: { select: { name: true, companyName: true, email: true } },
+        items: { include: { product: { select: { name: true, sku: true } } } },
+        payments: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return res.status(200).json({ data: invoices });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to fetch invoices' });
+  }
+};
+
+// 3. Record Payment against an Invoice
+export const recordPayment = async (req: Request, res: Response) => {
+  try {
+    const { invoiceId, amount, method, transactionId, notes } = req.body;
+
+    const invoice = await prisma.invoice.findUnique({ where: { id: invoiceId } });
+
+    if (!invoice) {
+      return res.status(404).json({ error: 'Invoice not found' });
+    }
+
+    const newPaidAmount = invoice.paidAmount + amount;
+    const isFullyPaid = newPaidAmount >= invoice.totalAmount;
+
+    const paymentResult = await prisma.$transaction([
+      // Create Payment Entry
+      prisma.payment.create({
+        data: {
+          invoiceId,
+          amount,
+          method,
+          transactionId,
+          notes,
+        },
+      }),
+      // Update Invoice Paid Amount & Status
+      prisma.invoice.update({
+        where: { id: invoiceId },
+        data: {
+          paidAmount: newPaidAmount,
+          status: isFullyPaid ? InvoiceStatus.PAID : invoice.status,
+        },
+      }),
+    ]);
+
+    return res.status(200).json({
+      message: isFullyPaid ? 'Invoice fully paid' : 'Partial payment recorded',
+      payment: paymentResult[0],
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to record payment' });
+  }
+};
