@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NJ Technopharma LLP — ERP</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#172033}button,input,select{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}.side{width:240px;background:#15223b;color:#fff;padding:18px;display:flex;flex-direction:column;gap:7px}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;padding:8px 5px 22px}.logo{width:42px;height:42px;border-radius:11px;background:#fff;color:#15223b;display:grid;place-items:center;font-weight:900}.nav{background:transparent;color:#d7deeb;border:0;text-align:left;padding:12px;border-radius:8px}.nav:hover,.nav.active{background:#ffffff18;color:#fff}.logout{margin-top:auto}.main{flex:1;padding:25px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.muted{color:#718096;font-size:13px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card,.panel{background:#fff;border:1px solid #e3e8f0;border-radius:14px;padding:20px}.card b{font-size:25px;display:block;margin-top:7px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.btn{border:0;border-radius:8px;padding:10px 15px;font-weight:700}.primary{background:#15223b;color:#fff}.secondary{background:#edf1f7}.danger{background:#fee2e2;color:#991b1b}.success{background:#e7f6ec;color:#166534}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px;border-bottom:1px solid #edf0f4;text-align:left;font-size:13px;white-space:nowrap}.table th{background:#fafbfc}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;padding:10px;border:1px solid #d9e0ea;border-radius:8px}.wide{grid-column:1/-1}.modal{position:fixed;inset:0;background:#071122aa;display:grid;place-items:center;padding:15px;z-index:5}.modalbox{background:#fff;border-radius:15px;width:min(720px,100%);max-height:90vh;overflow:auto;padding:22px}.hidden{display:none!important}.right{text-align:right}.pill{padding:4px 8px;border-radius:20px;background:#e9f7ef;color:#166534;font-size:11px}.invoice{border:1px solid #ddd;padding:25px;background:#fff}.invoicehead{display:flex;justify-content:space-between}.total{font-size:24px;font-weight:800}.login{min-height:100vh;display:grid;place-items:center;background:#f2f5fa}.loginbox{width:min(410px,92%);background:#fff;padding:32px;border-radius:18px;box-shadow:0 20px 60px #0001}.loginbox h1{margin:8px 0}.loginbox input{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #d9e0ea;border-radius:8px}.loginbox button{width:100%}.toast{position:fixed;right:20px;bottom:20px;background:#15223b;color:#fff;padding:12px 16px;border-radius:9px;display:none;z-index:20}.empty{text-align:center;padding:30px;color:#8a95a7}@media(max-width:800px){.side{width:65px;padding:10px}.brand span:last-child,.nav span{display:none}.nav{text-align:center}.main{padding:15px}.cards{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.top h2{font-size:20px}}
+</style>
+</head>
+<body>
+<div id="login" class="login">
+ <div class="loginbox">
+  <div class="brand"><span class="logo">NJ</span><span>NJ TECHNOPHARMA LLP</span></div>
+  <h1>ERP Login</h1><p class="muted">Business management portal</p>
+  <label>Username</label><input id="lu" value="admin">
+  <label>Password</label><input id="lp" type="password" value="admin123">
+  <button class="btn primary" onclick="login()">Sign In</button>
+  <p class="muted">Demo: admin / admin123</p>
+ </div>
+</div>
+
+<div id="app" class="app hidden">
+<aside class="side">
+ <div class="brand"><span class="logo">NJ</span><span>NJ ERP</span></div>
+ <button class="nav active" data-page="dashboard" onclick="page('dashboard')">▦ <span>Dashboard</span></button>
+ <button class="nav" data-page="customers" onclick="page('customers')">♙ <span>Customers</span></button>
+ <button class="nav" data-page="products" onclick="page('products')">▣ <span>Products</span></button>
+ <button class="nav" data-page="invoices" onclick="page('invoices')">▤ <span>Sales Invoices</span></button>
+ <button class="nav" data-page="purchases" onclick="page('purchases')">▥ <span>Purchases</span></button>
+ <button class="nav" data-page="payments" onclick="page('payments')">₹ <span>Payments</span></button>
+ <button class="nav" data-page="reports" onclick="page('reports')">◫ <span>Reports</span></button>
+ <button class="nav logout" onclick="logout()">↪ <span>Logout</span></button>
+</aside>
+<main class="main">
+ <div class="top"><div><div class="muted">NJ TECHNOPHARMA LLP</div><h2 id="title">Dashboard</h2></div><div class="muted">Admin • Local ERP</div></div>
+ <div id="content"></div>
+</main>
+</div>
+<div id="modal" class="modal hidden"></div><div id="toast" class="toast"></div>
+
+<script>
+const KEY='NJ_ERP_V1';
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||{customers:[],products:[],invoices:[],purchases:[],payments:[]};
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function money(n){return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2})}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',1800)}
+function login(){if(document.getElementById('lu').value==='admin'&&document.getElementById('lp').value==='admin123'){sessionStorage.ok='1';document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');page('dashboard')}else alert('Invalid login')}
+function logout(){sessionStorage.removeItem('ok');location.reload()}
+if(sessionStorage.ok){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')}
+function page(p){
+ document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===p));
+ document.getElementById('title').textContent={dashboard:'Dashboard',customers:'Customers',products:'Products & Inventory',invoices:'Sales Invoices',purchases:'Purchases',payments:'Payments & Receipts',reports:'Reports'}[p];
+ ({dashboard,customers,products,invoices,purchases,payments,reports}[p])();
+}
+function dashboard(){
+let sales=db.invoices.reduce((a,x)=>a+x.total,0),recv=db.invoices.reduce((a,x)=>a+(x.status==='Paid'?0:x.total),0);
+document.getElementById('content').innerHTML=`<div class="cards">
+<div class="card"><span class="muted">Total Sales</span><b>${money(sales)}</b></div>
+<div class="card"><span class="muted">Receivables</span><b>${money(recv)}</b></div>
+<div class="card"><span class="muted">Customers</span><b>${db.customers.length}</b></div>
+<div class="card"><span class="muted">Products</span><b>${db.products.length}</b></div></div>
+<div class="panel" style="margin-top:18px"><h3>Quick Actions</h3><div class="toolbar">
+<button class="btn primary" onclick="invoiceForm()">+ New Invoice</button>
+<button class="btn secondary" onclick="customerForm()">+ Customer</button>
+<button class="btn secondary" onclick="productForm()">+ Product</button></div>
+<p class="muted">All demo data is saved in this browser using local storage. Production deployment will use a secure cloud database.</p></div>`;
+}
+function customerForm(id=null){
+let x=id?db.customers.find(a=>a.id===id):{name:'',gstin:'',phone:'',email:'',address:''};
+modal(`<h3>${id?'Edit':'Add'} Customer</h3><div class="formgrid">
+${field('cname','Customer / Company Name',x.name)}${field('cgst','GSTIN',x.gstin)}${field('cphone','Phone',x.phone)}${field('cemail','Email',x.email)}${field('caddr','Address',x.address,true)}
+</div><div class="toolbar" style="margin-top:18px"><button class="btn primary" onclick="saveCustomer('${id||''}')">Save</button><button class="btn secondary" onclick="closeModal()">Cancel</button></div>`);
+}
+function saveCustomer(id){
+let o={id:id||Date.now().toString(),name:v('cname'),gstin:v('cgst'),phone:v('cphone'),email:v('cemail'),address:v('caddr')};
+if(!o.name)return alert('Customer name required');let i=db.customers.findIndex(a=>a.id===id);i>=0?db.customers[i]=o:db.customers.push(o);save();closeModal();customers();toast('Customer saved')}
+function customers(){
+document.getElementById('content').innerHTML=`<div class="toolbar"><button class="btn primary" onclick="customerForm()">+ Add Customer</button></div><div class="panel tablewrap"><table class="table"><tr><th>Name</th><th>GSTIN</th><th>Phone</th><th>Email</th><th>Actions</th></tr>${db.customers.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.gstin)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td><button class="btn secondary" onclick="customerForm('${x.id}')">Edit</button> <button class="btn danger" onclick="del('customers','${x.id}',customers)">Delete</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">No customers yet</td></tr>`}</table></div>`;
+}
+function productForm(id=null){
+let x=id?db.products.find(a=>a.id===id):{name:'',sku:'',hsn:'',rate:0,stock:0,gst:18};
+modal(`<h3>${id?'Edit':'Add'} Product</h3><div class="formgrid">${field('pname','Product Name',x.name)}${field('psku','SKU / Code',x.sku)}${field('phsn','HSN/SAC',x.hsn)}${field('prate','Selling Rate',x.rate,'number')}${field('pstock','Opening Stock',x.stock,'number')}${field('pgst','GST %',x.gst,'number')}</div><div class="toolbar" style="margin-top:18px"><button class="btn primary" onclick="saveProduct('${id||''}')">Save</button><button class="btn secondary" onclick="closeModal()">Cancel</button></div>`);
+}
+function saveProduct(id){
+let o={id:id||Date.now().toString(),name:v('pname'),sku:v('psku'),hsn:v('phsn'),rate:+v('prate')||0,stock:+v('pstock')||0,gst:+v('pgst')||0};
+if(!o.name)return alert('Product name required');let i=db.products.findIndex(a=>a.id===id);i>=0?db.products[i]=o:db.products.push(o);save();closeModal();products();toast('Product saved')}
+function products(){
+document.getElementById('content').innerHTML=`<div class="toolbar"><button class="btn primary" onclick="productForm()">+ Add Product</button></div><div class="panel tablewrap"><table class="table"><tr><th>Product</th><th>SKU</th><th>HSN</th><th>Rate</th><th>Stock</th><th>GST</th><th>Actions</th></tr>${db.products.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.sku)}</td><td>${esc(x.hsn)}</td><td>${money(x.rate)}</td><td>${x.stock}</td><td>${x.gst}%</td><td><button class="btn secondary" onclick="productForm('${x.id}')">Edit</button> <button class="btn danger" onclick="del('products','${x.id}',products)">Delete</button></td></tr>`).join('')||`<tr><td colspan="7" class="empty">No products yet</td></tr>`}</table></div>`;
+}
+function invoiceForm(){
+let opts=db.customers.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+let po=db.products.map(x=>`<option value="${x.id}">${esc(x.name)} — ${money(x.rate)}</option>`).join('');
+modal(`<h3>Create Sales Invoice</h3><div class="formgrid">
+<div class="field"><label>Customer</label><select id="ic">${opts||'<option value="">Add customer first</option>'}</select></div>
+${field('idate','Invoice Date',new Date().toISOString().slice(0,10),'date')}${field('inum','Invoice Number','INV-'+String(db.invoices.length+1).padStart(4,'0'))}
+<div class="field"><label>Product</label><select id="ip" onchange="fillRate()">${po||'<option value="">Add product first</option>'}</select></div>
+${field('iqty','Quantity',1,'number')}${field('irate','Rate',0,'number')}${field('igst','GST %',18,'number')}
+</div><div class="panel" style="margin-top:15px"><b>Preview</b><div id="ipreview" style="margin-top:8px">${money(0)}</div></div>
+<div class="toolbar" style="margin-top:18px"><button class="btn primary" onclick="saveInvoice()">Save Invoice</button><button class="btn secondary" onclick="closeModal()">Cancel</button></div>`);
+}
+function fillRate(){let p=db.products.find(x=>x.id===v('ip'));if(p){document.getElementById('irate').value=p.rate;document.getElementById('igst').value=p.gst}calcPreview()}
+document.addEventListener('input',e=>{if(['iqty','irate','igst'].includes(e.target.id))calcPreview()});
+function calcPreview(){let q=+v('iqty')||0,r=+v('irate')||0,g=+v('igst')||0,sub=q*r,t=sub+sub*g/100;if(document.getElementById('ipreview'))document.getElementById('ipreview').innerHTML=`Subtotal: ${money(sub)}<br>GST: ${money(sub*g/100)}<br><strong>Total: ${money(t)}</strong>`}
+function saveInvoice(){
+let q=+v('iqty')||0,r=+v('irate')||0,g=+v('igst')||0,sub=q*r,total=sub+sub*g/100,c=db.customers.find(x=>x.id===v('ic')),p=db.products.find(x=>x.id===v('ip'));
+if(!c||!p)return alert('Select customer and product');if(q<=0)return alert('Quantity must be greater than 0');
+let inv={id:Date.now().toString(),number:v('inum'),date:v('idate'),customer:c.name,customerId:c.id,product:p.name,productId:p.id,qty:q,rate:r,gst:g,subtotal:sub,total,status:'Unpaid'};
+db.invoices.push(inv);p.stock-=q;save();closeModal();invoices();toast('Invoice saved')}
+function invoices(){
+document.getElementById('content').innerHTML=`<div class="toolbar"><button class="btn primary" onclick="invoiceForm()">+ New Invoice</button></div><div class="panel tablewrap"><table class="table"><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Item</th><th>Total</th><th>Status</th><th>Actions</th></tr>${db.invoices.map(x=>`<tr><td>${x.number}</td><td>${x.date}</td><td>${esc(x.customer)}</td><td>${esc(x.product)} × ${x.qty}</td><td>${money(x.total)}</td><td><span class="pill">${x.status}</span></td><td><button class="btn secondary" onclick="viewInvoice('${x.id}')">View / Print</button> <button class="btn success" onclick="markPaid('${x.id}')">Paid</button></td></tr>`).join('')||`<tr><td colspan="7" class="empty">No invoices yet</td></tr>`}</table></div>`;
+}
+function viewInvoice(id){
+let x=db.invoices.find(a=>a.id===id);modal(`<div class="invoice" id="printarea"><div class="invoicehead"><div><h2>NJ TECHNOPHARMA LLP</h2><div class="muted">Pharmaceutical • Technology • Industrial Solutions</div></div><div><b>TAX INVOICE</b><br>${x.number}<br>${x.date}</div></div><hr><p><b>Bill To:</b> ${esc(x.customer)}</p><table class="table"><tr><th>Description</th><th>Qty</th><th>Rate</th><th>GST</th><th>Total</th></tr><tr><td>${esc(x.product)}</td><td>${x.qty}</td><td>${money(x.rate)}</td><td>${x.gst}%</td><td>${money(x.total)}</td></tr></table><h2 class="right">Grand Total: ${money(x.total)}</h2></div><div class="toolbar" style="margin-top:15px"><button class="btn primary" onclick="printInvoice()">Print / Save PDF</button><button class="btn secondary" onclick="closeModal()">Close</button></div>`);
+}
+function printInvoice(){let a=document.getElementById('printarea').innerHTML,w=window.open('','_blank');w.document.write('<html><head><title>Invoice</title><style>body{font-family:Arial;padding:30px}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid #ddd}.right{text-align:right}</style></head><body>'+a+'</body></html>');w.document.close();w.print()}
+function markPaid(id){let x=db.invoices.find(a=>a.id===id);x.status='Paid';db.payments.push({id:Date.now().toString(),type:'Receipt',ref:x.number,amount:x.total,date:new Date().toISOString().slice(0,10)});save();invoices();toast('Marked paid')}
+function purchases(){document.getElementById('content').innerHTML=`<div class="panel"><h3>Purchase Management</h3><p class="muted">Supplier purchase entry module is ready for the production database/API integration. Use Products and Payments in this local version.</p></div>`}
+function payments(){document.getElementById('content').innerHTML=`<div class="panel tablewrap"><h3>Payments / Receipts</h3><table class="table"><tr><th>Date</th><th>Type</th><th>Reference</th><th>Amount</th></tr>${db.payments.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.ref}</td><td>${money(x.amount)}</td></tr>`).join('')||`<tr><td colspan="4" class="empty">No payments yet</td></tr>`}</table></div>`}
+function reports(){let sales=db.invoices.reduce((a,x)=>a+x.total,0);document.getElementById('content').innerHTML=`<div class="cards"><div class="card"><span class="muted">Invoices</span><b>${db.invoices.length}</b></div><div class="card"><span class="muted">Sales</span><b>${money(sales)}</b></div><div class="card"><span class="muted">Paid</span><b>${money(db.invoices.filter(x=>x.status==='Paid').reduce((a,x)=>a+x.total,0))}</b></div><div class="card"><span class="muted">Outstanding</span><b>${money(db.invoices.filter(x=>x.status!=='Paid').reduce((a,x)=>a+x.total,0))}</b></div></div><div class="panel" style="margin-top:18px"><button class="btn primary" onclick="exportData()">Export ERP Backup (JSON)</button> <button class="btn secondary" onclick="resetData()">Reset Demo Data</button></div>`}
+function exportData(){let a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(db,null,2));a.download='NJ_ERP_Backup.json';a.click();toast('Backup downloaded')}
+function resetData(){if(confirm('Delete all local ERP data?')){db={customers:[],products:[],invoices:[],purchases:[],payments:[]};save();page('dashboard');toast('Data reset')}}
+function del(type,id,fn){if(confirm('Delete this record?')){db[type]=db[type].filter(x=>x.id!==id);save();fn();toast('Deleted')}}
+function field(id,label,val='',type='text',wide=false){return `<div class="field ${wide?'wide':''}"><label>${label}</label><input id="${id}" type="${type}" value="${esc(String(val??''))}"></div>`}
+function v(id){let e=document.getElementById(id);return e?e.value:''}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function modal(s){document.getElementById('modal').innerHTML='<div class="modalbox">'+s+'</div>';document.getElementById('modal').classList.remove('hidden')}
+function closeModal(){document.getElementById('modal').classList.add('hidden')}
+page('dashboard');
+</script>
+</body>
+</html>
