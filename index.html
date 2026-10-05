@@ -1,11 +1,21 @@
-import { Router } from 'express';
-import { createInvoice, getInvoices, recordPayment } from '../controllers/invoiceController';
+import express from 'express';
+import cors from 'cors';
+import invoiceRoutes from './routes/invoiceRoutes';
 
-const router = Router();
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Routes Definition
-router.post('/invoices', createInvoice);             // POST /api/v1/invoices
-router.get('/invoices', getInvoices);               // GET  /api/v1/invoices?status=PENDING
-router.post('/invoices/pay', recordPayment);        // POST /api/v1/invoices/pay
+// Middlewares
+app.use(cors());
+app.use(express.json());
 
-export default router;
+// API Routes
+app.use('/api/v1', invoiceRoutes);
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date() });
+});
+
+app.listen(PORT, () => {
+  console.log(`ERP Backend API running on port ${PORT}`);
+});
