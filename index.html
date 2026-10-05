@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NJ Technopharma LLP - Advanced ERP</title>
+  <title>NJ Technopharma LLP - Full ERP System</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -110,10 +110,12 @@
       <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard', this)"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
       <div class="nav-item" id="nav-invoices" onclick="showPage('invoices', this)"><i class="fa-solid fa-file-invoice"></i> Invoices / Billing</div>
       <div class="nav-item" id="nav-quotations" onclick="showPage('quotations', this)"><i class="fa-solid fa-file-signature"></i> Quotations</div>
+      <div class="nav-item" id="nav-po" onclick="showPage('po', this)"><i class="fa-solid fa-cart-flatbed"></i> Purchase Orders</div>
+      <div class="nav-item" id="nav-payments" onclick="showPage('payments', this)"><i class="fa-solid fa-indian-rupee-sign"></i> Payments Received</div>
       <div class="nav-item" id="nav-inventory" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</div>
       <div class="nav-item" id="nav-parties" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
       <div class="nav-item" id="nav-usermanagement" onclick="showPage('usermanagement', this)"><i class="fa-solid fa-user-gear"></i> User Rights & Control</div>
-      <div class="nav-item" onclick="handleLogout()" style="margin-top: 50px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
+      <div class="nav-item" onclick="handleLogout()" style="margin-top: 30px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
     </div>
 
     <div class="main-content">
@@ -126,8 +128,8 @@
       <div id="dashboard" class="page-section active">
         <div class="grid">
           <div class="card"><h4>TOTAL INVOICES</h4><div class="val">12</div></div>
-          <div class="card"><h4>QUOTATIONS GENERATED</h4><div class="val">5</div></div>
-          <div class="card"><h4>CUSTOMERS / VENDORS</h4><div class="val">2</div></div>
+          <div class="card"><h4>TOTAL PAYMENTS RECEIVED</h4><div class="val" id="statPayments">₹0.00</div></div>
+          <div class="card"><h4>PURCHASE ORDERS</h4><div class="val" id="statPO">1</div></div>
           <div class="card"><h4>ACTIVE USERS</h4><div class="val" id="statUsers">1</div></div>
         </div>
         <h3>System Activity Log</h3>
@@ -135,19 +137,39 @@
           <thead><tr><th>Date</th><th>Module</th><th>Description</th></tr></thead>
           <tbody>
             <tr><td>2026-10-05</td><td>Billing</td><td>Created Invoice #INV-1001</td></tr>
-            <tr><td>2026-10-05</td><td>Parties</td><td>Added Customer ABC Pharma</td></tr>
+            <tr><td>2026-10-05</td><td>Purchase Order</td><td>Generated PO #PO-801 for Raw Materials</td></tr>
           </tbody>
         </table>
       </div>
 
       <!-- INVOICES -->
       <div id="invoices" class="page-section">
-        <h3>Create Tax Invoice</h3>
+        <h3>Create Invoice / Billing</h3>
         <div class="doc-box">
-          <div style="display:flex; gap:15px; margin-bottom:15px;">
-            <input type="text" id="invClient" placeholder="Client / Company Name" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;">
-            <input type="text" id="invNum" value="INV-1001" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
-            <input type="date" id="invDate" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+          <div style="display:flex; gap:15px; margin-bottom:15px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+              <label style="font-size:12px; font-weight:bold;">Document Type</label>
+              <select id="invDocType" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" onchange="calcInvoice()">
+                <option value="Tax Invoice">Tax Invoice (With GST)</option>
+                <option value="Bill of Supply">Bill of Supply (Composition/Exempt)</option>
+              </select>
+            </div>
+            <div style="flex:2; min-width:200px;">
+              <label style="font-size:12px; font-weight:bold;">Customer Name</label>
+              <input type="text" id="invClient" placeholder="Client / Company Name" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
+            <div style="flex:1; min-width:120px;">
+              <label style="font-size:12px; font-weight:bold;">Invoice No.</label>
+              <input type="text" id="invNum" value="INV-1001" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
+            <div style="flex:1; min-width:120px;">
+              <label style="font-size:12px; font-weight:bold;">PO No. Ref</label>
+              <input type="text" id="invPONum" placeholder="e.g. PO-801" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
+            <div style="flex:1; min-width:120px;">
+              <label style="font-size:12px; font-weight:bold;">Date</label>
+              <input type="date" id="invDate" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            </div>
           </div>
           <h4>Items</h4>
           <div id="invRows">
@@ -161,10 +183,10 @@
           
           <div style="margin-top:20px; text-align:right;">
             <p>Subtotal: ₹<span id="invSub">0.00</span></p>
-            <p>GST (18%): ₹<span id="invGst">0.00</span></p>
+            <p id="gstRow">GST (18%): ₹<span id="invGst">0.00</span></p>
             <h3>Grand Total: ₹<span id="invGrand">0.00</span></h3>
           </div>
-          <button class="btn btn-success no-print" onclick="window.print()" style="margin-top:15px;"><i class="fa-solid fa-print"></i> Print Invoice</button>
+          <button class="btn btn-success no-print" onclick="window.print()" style="margin-top:15px;"><i class="fa-solid fa-print"></i> Print Document</button>
         </div>
       </div>
 
@@ -184,6 +206,99 @@
           </div>
           <button class="btn btn-success no-print" onclick="window.print()" style="margin-top:15px;"><i class="fa-solid fa-print"></i> Print Quotation</button>
         </div>
+      </div>
+
+      <!-- PURCHASE ORDERS (NEW) -->
+      <div id="po" class="page-section">
+        <h3>Purchase Orders (PO)</h3>
+        <div class="doc-box">
+          <h4>Generate Purchase Order</h4>
+          <div style="display:flex; gap:15px; margin-top:15px; flex-wrap:wrap;">
+            <input type="text" id="poVendor" placeholder="Vendor Name" style="flex:2; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            <input type="text" id="poNum" value="PO-801" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            <input type="date" id="poDate" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+          </div>
+          <div class="doc-row" style="margin-top:15px;">
+            <input type="text" id="poItem" placeholder="Raw Material / Item Description">
+            <input type="number" id="poQty" placeholder="Qty">
+            <input type="number" id="poRate" placeholder="Estimated Rate (₹)">
+          </div>
+          <button class="btn btn-success" onclick="addPO()" style="margin-top:10px;">Save Purchase Order</button>
+        </div>
+
+        <h4 style="margin-top:25px;">Saved Purchase Orders</h4>
+        <table id="poTable">
+          <thead>
+            <tr><th>PO Number</th><th>Vendor Name</th><th>Item Description</th><th>Qty</th><th>Total Cost</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PO-801</td>
+              <td>Sun Pharma Chemicals</td>
+              <td>Active Pharma Ingredient (API)</td>
+              <td>100 kg</td>
+              <td>₹1,50,000.00</td>
+              <td><span style="background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:12px;">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAYMENTS RECEIVED (NEW) -->
+      <div id="payments" class="page-section">
+        <h3>Payment Received Entry</h3>
+        <div class="doc-box">
+          <h4>Record Incoming Payment</h4>
+          <div class="form-grid" style="margin-top:15px;">
+            <div class="form-group">
+              <label>Customer Name</label>
+              <input type="text" id="payCustomer" placeholder="Select or Enter Customer">
+            </div>
+            <div class="form-group">
+              <label>Against Invoice No.</label>
+              <input type="text" id="payInvNum" placeholder="e.g. INV-1001">
+            </div>
+            <div class="form-group">
+              <label>Amount Received (₹)</label>
+              <input type="number" id="payAmount" placeholder="e.g. 50000">
+            </div>
+            <div class="form-group">
+              <label>Payment Mode</label>
+              <select id="payMode">
+                <option value="Bank Transfer (NEFT/RTGS)">Bank Transfer (NEFT/RTGS)</option>
+                <option value="UPI / QR">UPI / QR</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Transaction / Ref No.</label>
+              <input type="text" id="payRef" placeholder="UTR Number or Cheque No.">
+            </div>
+            <div class="form-group">
+              <label>Payment Date</label>
+              <input type="date" id="payDate">
+            </div>
+          </div>
+          <button class="btn btn-success" onclick="recordPayment()" style="margin-top:10px;">Record Payment</button>
+        </div>
+
+        <h4 style="margin-top:25px;">Payment Receipts History</h4>
+        <table id="payTable">
+          <thead>
+            <tr><th>Date</th><th>Customer Name</th><th>Invoice Ref</th><th>Mode</th><th>Ref/UTR No.</th><th>Amount Received</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-10-05</td>
+              <td>Apex Healthcare</td>
+              <td>INV-1001</td>
+              <td>NEFT</td>
+              <td>UTR987654321</td>
+              <td style="color:#10b981; font-weight:bold;">₹25,000.00</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- INVENTORY -->
@@ -267,7 +382,7 @@
         </table>
       </div>
 
-      <!-- USER MANAGEMENT & ACCESS RIGHTS -->
+      <!-- USER MANAGEMENT & ACCESS RIGHTS (UNCHANGED) -->
       <div id="usermanagement" class="page-section">
         <h3>User Management & Access Control</h3>
         <p style="margin-bottom:15px; color:#64748b;">Create login accounts, define Access Rights, and set System Limitations for users.</p>
@@ -308,17 +423,17 @@
           <tbody>
             <tr>
               <td><span class="badge-role badge-admin">Admin</span></td>
-              <td>Dashboard, Invoices, Quotations, Inventory, Parties, User Rights</td>
+              <td>Dashboard, Invoices, Quotations, PO, Payments, Inventory, Parties, User Rights</td>
               <td>None (Full Administrator Access)</td>
             </tr>
             <tr>
               <td><span class="badge-role badge-billing">Billing Staff</span></td>
-              <td>Invoices / Billing, Quotations, Customer Directory</td>
+              <td>Invoices / Billing, Quotations, Payments Received, Customer Directory</td>
               <td>Cannot access Inventory Stock settings or User Management</td>
             </tr>
             <tr>
               <td><span class="badge-role badge-inventory">Inventory Manager</span></td>
-              <td>Inventory Stock & Products, Vendors Directory</td>
+              <td>Inventory Stock & Products, Purchase Orders, Vendors Directory</td>
               <td>Cannot access Billing/Invoices or User Management</td>
             </tr>
             <tr>
@@ -347,6 +462,8 @@
   </div>
 
   <script>
+    let totalPaymentsReceived = 25000;
+
     // Users database with credentials & assigned roles
     let userDatabase = {
       "Admin": { pass: "admin", role: "Admin" }
@@ -366,7 +483,6 @@
         document.getElementById('userDisplay').innerText = user;
         document.getElementById('userRoleDisplay').innerText = role;
 
-        // Apply Module Permissions / Limitations
         applyUserRights(role);
 
       } else {
@@ -376,23 +492,22 @@
     }
 
     function applyUserRights(role) {
-      // Show all sidebar items by default
-      const navs = ['dashboard', 'invoices', 'quotations', 'inventory', 'parties', 'usermanagement'];
+      const navs = ['dashboard', 'invoices', 'quotations', 'po', 'payments', 'inventory', 'parties', 'usermanagement'];
       navs.forEach(n => document.getElementById('nav-' + n).style.display = 'flex');
 
-      // Apply Restrictions based on Role
       if (role === 'Billing') {
         document.getElementById('nav-inventory').style.display = 'none';
+        document.getElementById('nav-po').style.display = 'none';
         document.getElementById('nav-usermanagement').style.display = 'none';
       } else if (role === 'Inventory') {
         document.getElementById('nav-invoices').style.display = 'none';
         document.getElementById('nav-quotations').style.display = 'none';
+        document.getElementById('nav-payments').style.display = 'none';
         document.getElementById('nav-usermanagement').style.display = 'none';
       } else if (role === 'ViewOnly') {
         document.getElementById('nav-usermanagement').style.display = 'none';
       }
 
-      // Default to Dashboard
       showPage('dashboard', document.getElementById('nav-dashboard'));
     }
 
@@ -411,7 +526,7 @@
       document.getElementById('pageTitle').innerText = element ? element.innerText.trim() : 'Dashboard';
     }
 
-    // Invoice Logic
+    // Invoice Calculation with Tax / Bill of Supply Toggle
     function addInvRow() {
       const div = document.createElement('div');
       div.className = 'doc-row';
@@ -430,13 +545,92 @@
       qtys.forEach((q, i) => {
         sub += (parseFloat(q.value) || 0) * (parseFloat(rates[i].value) || 0);
       });
-      const gst = sub * 0.18;
+
+      const docType = document.getElementById('invDocType').value;
+      let gst = 0;
+
+      if (docType === 'Tax Invoice') {
+        gst = sub * 0.18;
+        document.getElementById('gstRow').style.display = 'block';
+      } else {
+        document.getElementById('gstRow').style.display = 'none';
+      }
+
       document.getElementById('invSub').innerText = sub.toFixed(2);
       document.getElementById('invGst').innerText = gst.toFixed(2);
       document.getElementById('invGrand').innerText = (sub + gst).toFixed(2);
     }
 
-    // Add Party (Customer/Vendor) Logic
+    // Purchase Order Logic
+    function addPO() {
+      const vendor = document.getElementById('poVendor').value.trim();
+      const num = document.getElementById('poNum').value.trim();
+      const item = document.getElementById('poItem').value.trim();
+      const qty = parseFloat(document.getElementById('poQty').value) || 0;
+      const rate = parseFloat(document.getElementById('poRate').value) || 0;
+
+      if (!vendor || !item) {
+        alert('Please fill Vendor Name and Item details.');
+        return;
+      }
+
+      const total = qty * rate;
+      const tbody = document.querySelector('#poTable tbody');
+      const row = tbody.insertRow();
+      row.innerHTML = `
+        <td>${num}</td>
+        <td>${vendor}</td>
+        <td>${item}</td>
+        <td>${qty}</td>
+        <td>₹${total.toFixed(2)}</td>
+        <td><span style="background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:12px;">Pending</span></td>
+      `;
+
+      document.getElementById('poVendor').value = '';
+      document.getElementById('poItem').value = '';
+      document.getElementById('poQty').value = '';
+      document.getElementById('poRate').value = '';
+
+      alert(`Purchase Order ${num} created successfully!`);
+    }
+
+    // Payment Entry Logic
+    function recordPayment() {
+      const cust = document.getElementById('payCustomer').value.trim();
+      const inv = document.getElementById('payInvNum').value.trim();
+      const amt = parseFloat(document.getElementById('payAmount').value) || 0;
+      const mode = document.getElementById('payMode').value;
+      const ref = document.getElementById('payRef').value.trim();
+      const date = document.getElementById('payDate').value || new Date().toISOString().split('T')[0];
+
+      if (!cust || amt <= 0) {
+        alert('Please enter Customer Name and valid Amount.');
+        return;
+      }
+
+      const tbody = document.querySelector('#payTable tbody');
+      const row = tbody.insertRow();
+      row.innerHTML = `
+        <td>${date}</td>
+        <td>${cust}</td>
+        <td>${inv || '-'}</td>
+        <td>${mode}</td>
+        <td>${ref || '-'}</td>
+        <td style="color:#10b981; font-weight:bold;">₹${amt.toFixed(2)}</td>
+      `;
+
+      totalPaymentsReceived += amt;
+      document.getElementById('statPayments').innerText = `₹${totalPaymentsReceived.toFixed(2)}`;
+
+      document.getElementById('payCustomer').value = '';
+      document.getElementById('payInvNum').value = '';
+      document.getElementById('payAmount').value = '';
+      document.getElementById('payRef').value = '';
+
+      alert(`Payment of ₹${amt} recorded successfully!`);
+    }
+
+    // Add Party Logic
     function addParty() {
       const type = document.getElementById('partyType').value;
       const company = document.getElementById('companyName').value.trim();
@@ -452,7 +646,6 @@
 
       const tbody = document.querySelector('#partiesTable tbody');
       const row = tbody.insertRow();
-      
       const badgeColor = type === 'Customer' ? 'background:#e0f2fe; color:#0369a1;' : 'background:#fef3c7; color:#92400e;';
 
       row.innerHTML = `
@@ -465,7 +658,6 @@
         <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="this.closest('tr').remove()">Delete</button></td>
       `;
 
-      // Reset Form
       document.getElementById('companyName').value = '';
       document.getElementById('contactName').value = '';
       document.getElementById('gstNo').value = '';
@@ -489,7 +681,7 @@
       }
     }
 
-    // User Creation Logic with Roles & Limitations
+    // User Management (Unchanged)
     function createUser() {
       const u = document.getElementById('newUsername').value.trim();
       const p = document.getElementById('newPassword').value.trim();
@@ -521,7 +713,6 @@
       document.getElementById('newUsername').value = '';
       document.getElementById('newPassword').value = '';
       
-      // Update stats
       document.getElementById('statUsers').innerText = Object.keys(userDatabase).length;
 
       alert(`User account '${u}' created with '${r}' Role & Limitations!`);
