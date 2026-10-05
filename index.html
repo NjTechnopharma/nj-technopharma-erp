@@ -26,7 +26,7 @@
     .auth-container h2 { text-align: center; margin-bottom: 25px; color: #0f172a; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
     }
     .btn {
@@ -64,10 +64,12 @@
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
     th { background: #f1f5f9; font-weight: 600; }
 
-    /* INVOICE & QUOTATION FORM */
+    /* INVOICE & FORM BOXES */
     .doc-box { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
     .doc-row { display: flex; gap: 10px; margin-bottom: 10px; }
     .doc-row input { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
 
     @media print {
       .sidebar, .header, .btn, .no-print { display: none !important; }
@@ -103,6 +105,7 @@
       <div class="nav-item" onclick="showPage('invoices', this)"><i class="fa-solid fa-file-invoice"></i> Invoices / Billing</div>
       <div class="nav-item" onclick="showPage('quotations', this)"><i class="fa-solid fa-file-signature"></i> Quotations</div>
       <div class="nav-item" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</div>
+      <div class="nav-item" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
       <div class="nav-item" onclick="showPage('usermanagement', this)"><i class="fa-solid fa-user-gear"></i> User Management</div>
       <div class="nav-item" onclick="handleLogout()" style="margin-top: 50px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
     </div>
@@ -118,7 +121,7 @@
         <div class="grid">
           <div class="card"><h4>TOTAL INVOICES</h4><div class="val" id="statInvoices">12</div></div>
           <div class="card"><h4>QUOTATIONS GENERATED</h4><div class="val" id="statQuotations">5</div></div>
-          <div class="card"><h4>INVENTORY PRODUCTS</h4><div class="val" id="statProducts">4</div></div>
+          <div class="card"><h4>CUSTOMERS / VENDORS</h4><div class="val" id="statParties">2</div></div>
           <div class="card"><h4>ACTIVE USERS</h4><div class="val" id="statUsers">2</div></div>
         </div>
         <h3>System Activity Log</h3>
@@ -126,7 +129,7 @@
           <thead><tr><th>Date</th><th>Module</th><th>Description</th></tr></thead>
           <tbody>
             <tr><td>2026-10-05</td><td>Billing</td><td>Created Invoice #INV-1001</td></tr>
-            <tr><td>2026-10-05</td><td>Quotation</td><td>Generated Quotation #QT-501</td></tr>
+            <tr><td>2026-10-05</td><td>Parties</td><td>Added Customer ABC Pharma</td></tr>
           </tbody>
         </table>
       </div>
@@ -194,7 +197,73 @@
         </table>
       </div>
 
-      <!-- USER MANAGEMENT (ADMIN ONLY) -->
+      <!-- CUSTOMERS & VENDORS -->
+      <div id="parties" class="page-section">
+        <h3>Customers & Vendors Directory</h3>
+        <p style="margin-bottom:15px; color:#64748b;">Add and manage Customer & Vendor details including GST No, Address, and Contact Name.</p>
+
+        <div class="doc-box">
+          <h4>Add New Customer / Vendor</h4>
+          <div class="form-grid" style="margin-top:15px;">
+            <div class="form-group">
+              <label>Party Type</label>
+              <select id="partyType">
+                <option value="Customer">Customer</option>
+                <option value="Vendor">Vendor</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Company Name</label>
+              <input type="text" id="companyName" placeholder="e.g. ABC Pharma Pvt Ltd">
+            </div>
+            <div class="form-group">
+              <label>Contact Person Name</label>
+              <input type="text" id="contactName" placeholder="e.g. Rahul Sharma">
+            </div>
+            <div class="form-group">
+              <label>GST Number</label>
+              <input type="text" id="gstNo" placeholder="24AAAAA0000A1Z5">
+            </div>
+            <div class="form-group">
+              <label>Phone / Mobile</label>
+              <input type="text" id="partyPhone" placeholder="+91 9876543210">
+            </div>
+            <div class="form-group">
+              <label>Full Address</label>
+              <input type="text" id="partyAddress" placeholder="City, State, Pincode">
+            </div>
+          </div>
+          <button class="btn btn-success" onclick="addParty()" style="margin-top:10px;">Save Details</button>
+        </div>
+
+        <h4 style="margin-top:25px;">Saved Directory</h4>
+        <table id="partiesTable">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Company Name</th>
+              <th>Contact Name</th>
+              <th>GST Number</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:12px;">Customer</span></td>
+              <td>Apex Healthcare</td>
+              <td>Suresh Mehta</td>
+              <td>24AAACA1234B1Z2</td>
+              <td>9898001122</td>
+              <td>Ahmedabad, Gujarat</td>
+              <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="this.closest('tr').remove()">Delete</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- USER MANAGEMENT -->
       <div id="usermanagement" class="page-section">
         <h3>User Management (Admin Control)</h3>
         <p style="margin-bottom:15px; color:#64748b;">Create and manage system login User IDs and Passwords.</p>
@@ -214,10 +283,9 @@
 
         <h4>Existing Users</h4>
         <table id="userTable">
-          <thead><tr><th>User Name</th><th>Password Hash / Status</th><th>Action</th></tr></thead>
+          <thead><tr><th>User Name</th><th>Status</th><th>Action</th></tr></thead>
           <tbody>
             <tr><td>Admin</td><td>Active (Primary)</td><td><span style="color:#64748b;">System</span></td></tr>
-            <tr><td>Staff1</td><td>Active</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="this.closest('tr').remove()">Delete</button></td></tr>
           </tbody>
         </table>
       </div>
@@ -226,10 +294,7 @@
   </div>
 
   <script>
-    // In-memory Users Store
-    let userDatabase = {
-      "Admin": "admin"
-    };
+    let userDatabase = { "Admin": "admin" };
 
     function handleLogin() {
       const user = document.getElementById('username').value.trim();
@@ -285,6 +350,45 @@
       document.getElementById('invSub').innerText = sub.toFixed(2);
       document.getElementById('invGst').innerText = gst.toFixed(2);
       document.getElementById('invGrand').innerText = (sub + gst).toFixed(2);
+    }
+
+    // Add Party (Customer/Vendor) Logic
+    function addParty() {
+      const type = document.getElementById('partyType').value;
+      const company = document.getElementById('companyName').value.trim();
+      const contact = document.getElementById('contactName').value.trim();
+      const gst = document.getElementById('gstNo').value.trim();
+      const phone = document.getElementById('partyPhone').value.trim();
+      const address = document.getElementById('partyAddress').value.trim();
+
+      if (!company) {
+        alert('Please enter Company Name!');
+        return;
+      }
+
+      const tbody = document.querySelector('#partiesTable tbody');
+      const row = tbody.insertRow();
+      
+      const badgeColor = type === 'Customer' ? 'background:#e0f2fe; color:#0369a1;' : 'background:#fef3c7; color:#92400e;';
+
+      row.innerHTML = `
+        <td><span style="${badgeColor} padding:3px 8px; border-radius:12px; font-weight:bold; font-size:12px;">${type}</span></td>
+        <td>${company}</td>
+        <td>${contact || '-'}</td>
+        <td>${gst || '-'}</td>
+        <td>${phone || '-'}</td>
+        <td>${address || '-'}</td>
+        <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="this.closest('tr').remove()">Delete</button></td>
+      `;
+
+      // Reset Form
+      document.getElementById('companyName').value = '';
+      document.getElementById('contactName').value = '';
+      document.getElementById('gstNo').value = '';
+      document.getElementById('partyPhone').value = '';
+      document.getElementById('partyAddress').value = '';
+
+      alert(`${type} details added successfully!`);
     }
 
     // Product Creation
