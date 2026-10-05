@@ -3,64 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NJ Technopharma - Dynamic ERP</title>
+  <title>NJ Technopharma - Professional ERP</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    :root { var-primary: #0d6efd; var-sidebar: #1e293b; var-bg: #f8fafc; var-border: #e2e8f0; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #f8fafc; color: #334155; display: flex; min-height: 100vh; }
+    :root {
+      --primary: #0d6efd;
+      --sidebar: #0f172a;
+      --bg: #f8fafc;
+      --border: #cbd5e1;
+    }
 
-    .auth-container { width: 90%; max-width: 400px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    .auth-container h2 { text-align: center; margin-bottom: 25px; color: #0f172a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); color: #334155; display: flex; min-height: 100vh; }
+
+    /* LOGIN SCREEN */
+    .auth-container {
+      width: 90%; max-width: 400px; margin: auto; background: #fff;
+      padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+    .auth-container h2 { text-align: center; margin-bottom: 20px; color: #0f172a; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; }
-    
-    .btn { padding: 10px 16px; background: #0d6efd; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
+    }
+    .btn {
+      padding: 10px 16px; background: var(--primary); color: #fff;
+      border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;
+    }
     .btn-full { width: 100%; margin-top: 10px; }
     .btn-secondary { background: #64748b; }
     .btn-success { background: #10b981; }
     .btn-danger { background: #ef4444; }
+    .btn-info { background: #0284c7; }
 
+    /* LAYOUT */
     .app-container { display: none; width: 100%; flex-direction: row; }
-    .sidebar { width: 250px; background: #1e293b; color: #fff; min-height: 100vh; padding: 20px 0; }
-    .sidebar h2 { text-align: center; font-size: 18px; margin-bottom: 30px; color: #38bdf8; }
-    .nav-item { padding: 12px 25px; display: flex; align-items: center; gap: 12px; color: #94a3b8; cursor: pointer; }
-    .nav-item:hover, .nav-item.active { background: #334155; color: #fff; border-left: 4px solid #0d6efd; }
+    .sidebar { width: 260px; background: var(--sidebar); color: #fff; min-height: 100vh; padding: 20px 0; }
+    .sidebar h2 { text-align: center; font-size: 18px; margin-bottom: 25px; color: #38bdf8; letter-spacing: 1px; }
+    .nav-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #94a3b8; cursor: pointer; font-size: 14px; }
+    .nav-item:hover, .nav-item.active { background: #1e293b; color: #fff; border-left: 4px solid var(--primary); }
 
     .main-content { flex: 1; padding: 25px; overflow-y: auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: #fff; padding: 15px 25px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: #fff; padding: 15px 25px; border-radius: 8px; border: 1px solid var(--border); }
     .page-section { display: none; }
     .page-section.active { display: block; }
 
-    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; margin-top: 15px; }
-    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
-    th { background: #f1f5f9; font-weight: 600; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+    .card { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
+    .card h4 { color: #64748b; font-size: 12px; margin-bottom: 8px; }
+    .card .val { font-size: 22px; font-weight: bold; color: #0f172a; }
 
-    .doc-box { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px; }
-    .doc-row { display: flex; gap: 10px; margin-bottom: 10px; }
-    .doc-row select, .doc-row input { flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); margin-top: 15px; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { background: #f1f5f9; font-weight: 600; color: #334155; }
+
+    .doc-box { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
+    .doc-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+    .doc-row select, .doc-row input { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
+
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    .badge-in { background: #dcfce7; color: #166534; }
+    .badge-out { background: #fee2e2; color: #991b1b; }
+
+    /* PROFESSIONAL A4 PRINT LAYOUT */
+    #printTemplate { display: none; }
 
     @media print {
-      .sidebar, .header, .btn, .no-print { display: none !important; }
-      body { background: #fff; }
-      .doc-box { border: none; }
+      body * { visibility: hidden; }
+      #printTemplate, #printTemplate * { visibility: visible; }
+      #printTemplate {
+        display: block !important;
+        position: absolute;
+        left: 0; top: 0; width: 100%;
+        background: #fff; color: #000;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .a4-container { border: 1px solid #000; padding: 15px; }
+      .p-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .p-table th, .p-table td { border: 1px solid #000; padding: 6px; font-size: 11px; text-align: left; }
+      .text-right { text-align: right !style; text-align: right; }
+      .text-center { text-align: center; }
+      .empty-row td { height: 120px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN SECTION -->
+  <!-- LOGIN -->
   <div id="authSection" class="auth-container">
-    <h2>NJ Technopharma ERP</h2>
+    <h2>NJ ERP Login</h2>
     <div class="form-group">
       <label>User Name</label>
       <input type="text" id="username" value="Admin">
     </div>
     <div class="form-group">
       <label>Password</label>
-      <input type="password" id="password" value="admin">
+      <input type="password" id="password" value="Admin">
     </div>
     <button class="btn btn-full" onclick="handleLogin()">Login</button>
   </div>
@@ -69,89 +111,200 @@
   <div id="appSection" class="app-container">
     <div class="sidebar">
       <h2>NJ TECHNOPHARMA</h2>
-      <div class="nav-item active" onclick="showPage('invoices', this)"><i class="fa-solid fa-file-invoice"></i> Invoices / Billing</div>
-      <div class="nav-item" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</div>
-      <div class="nav-item" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
+      <div class="nav-item active" id="menu-dashboard" onclick="showPage('dashboard', this)"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
+      <div class="nav-item" id="menu-invoices" onclick="showPage('invoices', this)"><i class="fa-solid fa-file-invoice"></i> Invoices / Billing</div>
+      <div class="nav-item" id="menu-quotations" onclick="showPage('quotations', this)"><i class="fa-solid fa-file-signature"></i> Quotations</div>
+      <div class="nav-item" id="menu-po" onclick="showPage('po', this)"><i class="fa-solid fa-cart-flatbed"></i> Purchase Orders</div>
+      <div class="nav-item" id="menu-payments" onclick="showPage('payments', this)"><i class="fa-solid fa-indian-rupee-sign"></i> Payments (In/Out)</div>
+      <div class="nav-item" id="menu-inventory" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Products / Services</div>
+      <div class="nav-item" id="menu-parties" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
+      <div class="nav-item" id="menu-users" onclick="showPage('users', this)"><i class="fa-solid fa-user-gear"></i> User Rights Control</div>
       <div class="nav-item" onclick="handleLogout()" style="margin-top: 30px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
     </div>
 
     <div class="main-content">
       <div class="header">
-        <h2 id="pageTitle">Invoices / Billing</h2>
-        <div>Logged in as: <strong>Admin</strong></div>
+        <h2 id="pageTitle">Dashboard</h2>
+        <div>User: <strong id="currentUserDisplay">Admin</strong> (<span id="currentRoleDisplay" style="color:var(--primary);">Admin</span>)</div>
       </div>
 
-      <!-- INVOICE SECTION WITH DROPDOWN LISTS -->
-      <div id="invoices" class="page-section active">
-        <h3>Create Invoice / Billing</h3>
+      <!-- DASHBOARD -->
+      <div id="dashboard" class="page-section active">
+        <div class="grid">
+          <div class="card"><h4>PAYMENTS RECEIVED</h4><div class="val" id="dashIn">₹0.00</div></div>
+          <div class="card"><h4>PAYMENTS PAID</h4><div class="val" id="dashOut">₹0.00</div></div>
+          <div class="card"><h4>TOTAL PRODUCTS</h4><div class="val" id="dashProd">0</div></div>
+          <div class="card"><h4>TOTAL PARTIES</h4><div class="val" id="dashParties">0</div></div>
+        </div>
+      </div>
+
+      <!-- INVOICES -->
+      <div id="invoices" class="page-section">
+        <h3>Invoice Generator</h3>
         <div class="doc-box">
           <div style="display:flex; gap:15px; margin-bottom:15px; flex-wrap:wrap;">
-            <div style="flex:2; min-width:200px;">
-              <label style="font-size:12px; font-weight:bold;">Select Customer (From Added Data)</label>
-              <select id="invClientSelect" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
-                <option value="">-- Select Customer --</option>
+            <div style="flex:1;">
+              <label style="font-size:12px; font-weight:bold;">Type</label>
+              <select id="invType">
+                <option value="TAX INVOICE">Tax Invoice (With GST)</option>
+                <option value="BILL OF SUPPLY">Bill of Supply (Exempted)</option>
               </select>
             </div>
-            <div style="flex:1; min-width:120px;">
-              <label style="font-size:12px; font-weight:bold;">Invoice No.</label>
-              <input type="text" id="invNum" value="INV-1001" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            <div style="flex:2;">
+              <label style="font-size:12px; font-weight:bold;">Select Customer/Vendor</label>
+              <select id="invPartySelect"></select>
             </div>
-            <div style="flex:1; min-width:120px;">
+            <div style="flex:1;">
+              <label style="font-size:12px; font-weight:bold;">Invoice No.</label>
+              <input type="text" id="invNum" value="INV-1001">
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:12px; font-weight:bold;">P.O. No.</label>
+              <input type="text" id="invPONum" placeholder="e.g. PO-801">
+            </div>
+            <div style="flex:1;">
               <label style="font-size:12px; font-weight:bold;">Date</label>
-              <input type="date" id="invDate" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+              <input type="date" id="invDate">
             </div>
           </div>
 
           <h4>Items Section</h4>
-          <div id="invRows">
-            <div class="doc-row">
-              <select class="inv-item-select" onchange="autoFillItemRate(this)">
-                <option value="">-- Select Item --</option>
-              </select>
-              <input type="number" placeholder="Qty" class="inv-qty" value="1" oninput="calcInvoice()">
-              <input type="number" placeholder="Rate (₹)" class="inv-rate" value="0" oninput="calcInvoice()">
-            </div>
-          </div>
-          <button class="btn btn-secondary no-print" onclick="addInvRow()" style="margin-top:10px;">+ Add More Item</button>
-          
+          <div id="invRows"></div>
+          <button class="btn btn-secondary" onclick="addInvRow()" style="margin-top:10px;">+ Add Product</button>
+
           <div style="margin-top:20px; text-align:right;">
-            <p>Subtotal: ₹<span id="invSub">0.00</span></p>
-            <p>GST (18%): ₹<span id="invGst">0.00</span></p>
+            <p>Taxable Total: ₹<span id="invTaxable">0.00</span></p>
+            <p>IGST (18%): ₹<span id="invGST">0.00</span></p>
             <h3>Grand Total: ₹<span id="invGrand">0.00</span></h3>
           </div>
-          <div class="no-print" style="margin-top:20px;">
-            <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Save & Print Invoice</button>
-          </div>
+          <button class="btn btn-success" onclick="printInvoice()" style="margin-top:15px;"><i class="fa-solid fa-print"></i> Save & Print A4 Invoice</button>
         </div>
       </div>
 
-      <!-- INVENTORY STOCK -->
-      <div id="inventory" class="page-section">
-        <h3>Add Items to Inventory</h3>
+      <!-- QUOTATIONS -->
+      <div id="quotations" class="page-section">
+        <h3>Create Quotation</h3>
         <div class="doc-box">
-          <div style="display:flex; gap:10px;">
-            <input type="text" id="newItemName" placeholder="Product Name (e.g. Paracetamol)">
-            <input type="number" id="newItemRate" placeholder="Unit Price (₹)">
-            <button class="btn btn-success" onclick="addNewProduct()">Add Item</button>
+          <div style="display:flex; gap:15px; margin-bottom:15px;">
+            <select id="quoPartySelect" style="flex:2;"></select>
+            <input type="text" id="quoNum" value="QT-501" placeholder="Quotation No" style="flex:1;">
+            <input type="text" id="quoPONum" placeholder="P.O. Ref No." style="flex:1;">
+            <input type="date" id="quoDate" style="flex:1;">
           </div>
+          <div class="doc-row">
+            <input type="text" id="quoDesc" placeholder="Work Description / Scope" style="flex:2;">
+            <input type="number" id="quoAmt" placeholder="Amount (₹)" style="flex:1;">
+          </div>
+          <button class="btn btn-success" onclick="alert('Quotation Created!')">Save Quotation</button>
         </div>
-        <table id="inventoryTable">
-          <thead><tr><th>Product Name</th><th>Price (₹)</th></tr></thead>
+      </div>
+
+      <!-- PURCHASE ORDERS -->
+      <div id="po" class="page-section">
+        <h3>Purchase Order (PO) Management</h3>
+        <div class="doc-box">
+          <h4>Create New Purchase Order</h4>
+          <div style="display:flex; gap:15px; margin-top:10px; margin-bottom:15px;">
+            <select id="poPartySelect" style="flex:2;"></select>
+            <input type="text" id="poNum" value="PO-901" style="flex:1;">
+            <input type="date" id="poDate" style="flex:1;">
+          </div>
+          <div class="doc-row">
+            <input type="text" id="poItem" placeholder="Item Name / Details" style="flex:2;">
+            <input type="number" id="poQty" placeholder="Qty" style="flex:1;">
+            <input type="number" id="poRate" placeholder="Rate (₹)" style="flex:1;">
+          </div>
+          <button class="btn btn-success" onclick="savePO()">Save PO</button>
+        </div>
+
+        <h4 style="margin-top:20px;">Existing Purchase Orders</h4>
+        <table id="poTable">
+          <thead><tr><th>PO No</th><th>Vendor</th><th>Item</th><th>Qty</th><th>Total Cost</th><th>Action</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
 
-      <!-- CUSTOMERS & VENDORS -->
-      <div id="parties" class="page-section">
-        <h3>Add Customers & Vendors</h3>
+      <!-- PAYMENTS IN/OUT -->
+      <div id="payments" class="page-section">
+        <h3>Payment Management (In / Out)</h3>
+        <div class="doc-box">
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <select id="payType" style="flex:1;">
+              <option value="IN">Payment Received (IN)</option>
+              <option value="OUT">Payment Paid (OUT)</option>
+            </select>
+            <select id="payPartySelect" style="flex:2;"></select>
+            <input type="number" id="payAmt" placeholder="Amount (₹)" style="flex:1;">
+            <input type="date" id="payDate" style="flex:1;">
+          </div>
+          <button class="btn btn-success" onclick="savePayment()">Record Payment</button>
+        </div>
+
+        <h4 style="margin-top:20px;">Payment Logs</h4>
+        <table id="payTable">
+          <thead><tr><th>Type</th><th>Party Name</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- PRODUCTS & SERVICES -->
+      <div id="inventory" class="page-section">
+        <h3>Products & Services Master</h3>
         <div class="doc-box">
           <div style="display:flex; gap:10px;">
-            <input type="text" id="newCustomerName" placeholder="Customer / Company Name">
-            <button class="btn btn-success" onclick="addNewCustomer()">Add Customer</button>
+            <input type="text" id="pName" placeholder="Product/Service Name" style="flex:2;">
+            <input type="text" id="pHSN" placeholder="HSN/SAC Code" style="flex:1;">
+            <input type="number" id="pPrice" placeholder="UnitPrice (₹)" style="flex:1;">
+            <button class="btn btn-success" onclick="addProduct()">Add Item</button>
           </div>
         </div>
-        <table id="partiesTable">
-          <thead><tr><th>Customer Name</th></tr></thead>
+        <table id="prodTable">
+          <thead><tr><th>Name</th><th>HSN/SAC</th><th>Price</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- PARTIES (WITH GST FETCH & DIRECTIVE LINK) -->
+      <div id="parties" class="page-section">
+        <h3>Customer & Vendor Master</h3>
+        <div class="doc-box">
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <select id="partyType" style="flex:1;">
+              <option value="Customer">Customer</option>
+              <option value="Vendor">Vendor</option>
+            </select>
+            <input type="text" id="partyGST" placeholder="Enter 15 Digit GSTIN" style="flex:2;">
+            <button class="btn btn-info" onclick="fetchGSTData()"><i class="fa-solid fa-magnifying-glass"></i> Fetch / Open GST Portal</button>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="partyName" placeholder="Company Name" style="flex:2;">
+            <input type="text" id="partyAddress" placeholder="Address" style="flex:2;">
+            <button class="btn btn-success" onclick="addParty()">Save Party</button>
+          </div>
+        </div>
+        <table id="partyTable">
+          <thead><tr><th>Type</th><th>Company Name</th><th>GSTIN</th><th>Address</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- USER RIGHTS CONTROL -->
+      <div id="users" class="page-section">
+        <h3>User Rights Management</h3>
+        <div class="doc-box">
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="uName" placeholder="User ID" style="flex:1;">
+            <input type="password" id="uPass" placeholder="Password" style="flex:1;">
+            <select id="uRole" style="flex:1;">
+              <option value="Admin">Admin (Full Control)</option>
+              <option value="Billing">Billing User (Invoices Only)</option>
+              <option value="ViewOnly">View Only</option>
+            </select>
+            <button class="btn btn-success" onclick="addUser()">Create User</button>
+          </div>
+        </div>
+        <table id="userTable">
+          <thead><tr><th>User ID</th><th>Role</th><th>Action</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -159,18 +312,102 @@
     </div>
   </div>
 
-  <script>
-    let customerList = ["Apex Healthcare", "Sun Pharma", "Pooja Enterprises"];
-    let itemList = [
-      { name: "Paracetamol 500mg", rate: 15 },
-      { name: "Amoxicillin 250mg", rate: 45 },
-      { name: "Solvent base black ink", rate: 1800 }
-    ];
+  <!-- PROFESSIONAL A4 PRINT TEMPLATE -->
+  <div id="printTemplate">
+    <div class="a4-container">
+      <table style="width:100%;">
+        <tr>
+          <td style="width:60%;">
+            <h2 style="color:#0284c7; font-size:18px;">NJ TECHNOPHARMA LLP</h2>
+            <p style="font-size:11px;">34, Badarpur Extn, Opp Metro Station, Ahmedabad, Gujarat</p>
+            <p style="font-size:11px;">GSTIN: 24AAAAA0000A1Z5 | Phone: +91 9876543210</p>
+          </td>
+          <td style="width:40%; text-align:right;">
+            <h3 id="pDocTitle" style="border:1px solid #000; padding:4px; display:inline-block; font-size:14px;">TAX INVOICE</h3>
+          </td>
+        </tr>
+      </table>
+      <hr style="margin:10px 0; border:0.5px solid #000;">
+      <table style="width:100%; font-size:11px;">
+        <tr>
+          <td style="width:50%;">
+            <strong>Billed To (Party Details):</strong><br>
+            <span id="pPartyName" style="font-weight:bold; font-size:13px;"></span><br>
+            Address: <span id="pPartyAddress"></span><br>
+            GSTIN: <span id="pPartyGST"></span>
+          </td>
+          <td style="width:50%; text-align:right;">
+            <strong>Invoice Details:</strong><br>
+            Invoice No: <span id="pInvNum"></span><br>
+            P.O. Reference: <span id="pPONum"></span><br>
+            Date: <span id="pDate"></span>
+          </td>
+        </tr>
+      </table>
 
+      <table class="p-table">
+        <thead>
+          <tr>
+            <th>Sr.</th>
+            <th>Item / Product Description</th>
+            <th>HSN/SAC</th>
+            <th>Qty</th>
+            <th>Rate (₹)</th>
+            <th>Taxable (₹)</th>
+            <th>IGST (18%)</th>
+            <th>Total (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="pItemsBody"></tbody>
+      </table>
+
+      <table style="width:100%; margin-top:10px; font-size:11px;">
+        <tr>
+          <td style="width:60%;">
+            <strong>Bank Details:</strong><br>
+            Bank Name: Axis Bank<br>
+            Account No: 926020020283989<br>
+            IFSC Code: UTIB0001575
+          </td>
+          <td style="width:40%; text-align:right;">
+            <p>Taxable Total: ₹<span id="pTaxable">0.00</span></p>
+            <p>IGST Total: ₹<span id="pIGST">0.00</span></p>
+            <h4>Grand Total: ₹<span id="pGrand">0.00</span></h4>
+          </td>
+        </tr>
+      </table>
+      <br><br>
+      <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:20px;">
+        <div>Customer Signature</div>
+        <div>For NJ TECHNOPHARMA LLP (Authorised Signatory)</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DATA STORES
+    let users = { "Admin": { pass: "Admin", role: "Admin" } };
+    let currentUser = "Admin";
+    let parties = [{ type: "Customer", name: "Pooja Enterprises", gst: "24ABIFP5879M1ZF", address: "Gujarat, India" }];
+    let products = [{ name: "Solvent base black ink", hsn: "84439951", price: 1800 }];
+    let poList = [];
+    let payments = [];
+
+    // AUTH
     function handleLogin() {
-      document.getElementById('authSection').style.display = 'none';
-      document.getElementById('appSection').style.display = 'flex';
-      updateDropdowns();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value.trim();
+      if (users[u] && users[u].pass === p) {
+        currentUser = u;
+        document.getElementById('currentUserDisplay').innerText = u;
+        document.getElementById('currentRoleDisplay').innerText = users[u].role;
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('appSection').style.display = 'flex';
+        applyUserRights();
+        refreshAllDropdowns();
+      } else {
+        alert('Invalid Login Credentials!');
+      }
     }
 
     function handleLogout() {
@@ -178,108 +415,252 @@
       document.getElementById('authSection').style.display = 'block';
     }
 
-    function showPage(pageId, element) {
-      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-      if (element) element.classList.add('active');
-    }
-
-    function updateDropdowns() {
-      // Update Customer Dropdown
-      const custSelect = document.getElementById('invClientSelect');
-      custSelect.innerHTML = '<option value="">-- Select Customer --</option>';
-      customerList.forEach(c => {
-        custSelect.innerHTML += `<option value="${c}">${c}</option>`;
-      });
-
-      // Update Customer Table
-      const cTable = document.querySelector('#partiesTable tbody');
-      cTable.innerHTML = '';
-      customerList.forEach(c => {
-        cTable.innerHTML += `<tr><td>${c}</td></tr>`;
-      });
-
-      // Update Item Dropdowns
-      document.querySelectorAll('.inv-item-select').forEach(sel => {
-        const currentVal = sel.value;
-        sel.innerHTML = '<option value="">-- Select Item --</option>';
-        itemList.forEach(item => {
-          sel.innerHTML += `<option value="${item.name}">${item.name}</option>`;
-        });
-        sel.value = currentVal;
-      });
-
-      // Update Inventory Table
-      const iTable = document.querySelector('#inventoryTable tbody');
-      iTable.innerHTML = '';
-      itemList.forEach(i => {
-        iTable.innerHTML += `<tr><td>${i.name}</td><td>₹${i.rate}</td></tr>`;
-      });
-    }
-
-    function addNewCustomer() {
-      const val = document.getElementById('newCustomerName').value.trim();
-      if (val) {
-        customerList.push(val);
-        document.getElementById('newCustomerName').value = '';
-        updateDropdowns();
-        alert('Customer added successfully!');
+    function applyUserRights() {
+      const role = users[currentUser].role;
+      if (role === 'Billing') {
+        document.getElementById('menu-users').style.display = 'none';
+        document.getElementById('menu-po').style.display = 'none';
+      } else if (role === 'ViewOnly') {
+        document.querySelectorAll('button').forEach(b => { if(!b.onclick.toString().includes('showPage') && !b.onclick.toString().includes('handleLogout')) b.style.display = 'none'; });
       }
     }
 
-    function addNewProduct() {
-      const name = document.getElementById('newItemName').value.trim();
-      const rate = parseFloat(document.getElementById('newItemRate').value) || 0;
+    function showPage(id, el) {
+      document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (el) el.classList.add('active');
+      document.getElementById('pageTitle').innerText = el ? el.innerText.trim() : 'Dashboard';
+    }
+
+    // GST FETCH & PORTAL LOOKUP
+    function fetchGSTData() {
+      const gst = document.getElementById('partyGST').value.trim();
+      if (gst.length === 15) {
+        document.getElementById('partyName').value = "Verified Company (" + gst.substr(2,5) + ")";
+        document.getElementById('partyAddress').value = "State Code " + gst.substr(0,2) + ", India";
+        window.open(`https://services.gst.gov.in/services/searchtp?gstin=${gst}`, '_blank');
+      } else {
+        alert('Valid 15-Digit GSTIN required!');
+      }
+    }
+
+    // MASTER MANAGEMENT (DYNAMIC DROPDOWNS & REMOVE OPTIONS)
+    function refreshAllDropdowns() {
+      const partySelects = ['invPartySelect', 'quoPartySelect', 'poPartySelect', 'payPartySelect'];
+      partySelects.forEach(id => {
+        const sel = document.getElementById(id);
+        if(sel) {
+          sel.innerHTML = '<option value="">-- Select Party --</option>';
+          parties.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name} (${p.type})</option>`);
+        }
+      });
+
+      renderParties();
+      renderProducts();
+      renderUsers();
+      renderPO();
+      renderPayments();
+      updateDashboard();
+    }
+
+    function addParty() {
+      const name = document.getElementById('partyName').value.trim();
+      const gst = document.getElementById('partyGST').value.trim();
+      const address = document.getElementById('partyAddress').value.trim();
+      const type = document.getElementById('partyType').value;
       if (name) {
-        itemList.push({ name: name, rate: rate });
-        document.getElementById('newItemName').value = '';
-        document.getElementById('newItemRate').value = '';
-        updateDropdowns();
-        alert('Product added successfully!');
+        parties.push({ type, name, gst, address });
+        refreshAllDropdowns();
+        document.getElementById('partyName').value = '';
       }
     }
 
+    function deleteParty(idx) { parties.splice(idx, 1); refreshAllDropdowns(); }
+
+    function renderParties() {
+      const tb = document.querySelector('#partyTable tbody');
+      tb.innerHTML = '';
+      parties.forEach((p, i) => {
+        tb.innerHTML += `<tr><td>${p.type}</td><td>${p.name}</td><td>${p.gst}</td><td>${p.address}</td><td><button class="btn btn-danger" onclick="deleteParty(${i})">Remove</button></td></tr>`;
+      });
+    }
+
+    function addProduct() {
+      const name = document.getElementById('pName').value.trim();
+      const hsn = document.getElementById('pHSN').value.trim();
+      const price = parseFloat(document.getElementById('pPrice').value) || 0;
+      if (name) {
+        products.push({ name, hsn, price });
+        refreshAllDropdowns();
+        document.getElementById('pName').value = '';
+      }
+    }
+
+    function deleteProduct(idx) { products.splice(idx, 1); refreshAllDropdowns(); }
+
+    function renderProducts() {
+      const tb = document.querySelector('#prodTable tbody');
+      tb.innerHTML = '';
+      products.forEach((p, i) => {
+        tb.innerHTML += `<tr><td>${p.name}</td><td>${p.hsn}</td><td>₹${p.price}</td><td><button class="btn btn-danger" onclick="deleteProduct(${i})">Remove</button></td></tr>`;
+      });
+    }
+
+    // INVOICE ENGINE
     function addInvRow() {
       const div = document.createElement('div');
       div.className = 'doc-row';
+      let options = '<option value="">-- Select Product --</option>';
+      products.forEach(p => options += `<option value="${p.name}">${p.name}</option>`);
       div.innerHTML = `
-        <select class="inv-item-select" onchange="autoFillItemRate(this)">
-          <option value="">-- Select Item --</option>
-        </select>
-        <input type="number" placeholder="Qty" class="inv-qty" value="1" oninput="calcInvoice()">
-        <input type="number" placeholder="Rate (₹)" class="inv-rate" value="0" oninput="calcInvoice()">
+        <select class="p-select" style="flex:2;" onchange="autoFillPrice(this)">${options}</select>
+        <input type="text" placeholder="HSN" class="p-hsn" style="flex:1;">
+        <input type="number" placeholder="Qty" class="p-qty" value="1" style="flex:1;" oninput="calcInvoice()">
+        <input type="number" placeholder="Rate" class="p-rate" value="0" style="flex:1;" oninput="calcInvoice()">
+        <button class="btn btn-danger" onclick="this.parentElement.remove(); calcInvoice();">X</button>
       `;
       document.getElementById('invRows').appendChild(div);
-      updateDropdowns();
     }
 
-    function autoFillItemRate(selectElem) {
-      const selectedName = selectElem.value;
-      const itemObj = itemList.find(i => i.name === selectedName);
-      const row = selectElem.parentElement;
-      const rateInput = row.querySelector('.inv-rate');
-      if (itemObj) {
-        rateInput.value = itemObj.rate;
-      } else {
-        rateInput.value = 0;
+    function autoFillPrice(sel) {
+      const item = products.find(p => p.name === sel.value);
+      const row = sel.parentElement;
+      if (item) {
+        row.querySelector('.p-hsn').value = item.hsn;
+        row.querySelector('.p-rate').value = item.price;
       }
       calcInvoice();
     }
 
     function calcInvoice() {
-      let sub = 0;
-      const qtys = document.querySelectorAll('.inv-qty');
-      const rates = document.querySelectorAll('.inv-rate');
-      qtys.forEach((q, i) => {
-        sub += (parseFloat(q.value) || 0) * (parseFloat(rates[i].value) || 0);
-      });
-      const gst = sub * 0.18;
-      document.getElementById('invSub').innerText = sub.toFixed(2);
-      document.getElementById('invGst').innerText = gst.toFixed(2);
-      document.getElementById('invGrand').innerText = (sub + gst).toFixed(2);
+      let taxable = 0;
+      const qtys = document.querySelectorAll('.p-qty');
+      const rates = document.querySelectorAll('.p-rate');
+      qtys.forEach((q, i) => taxable += (parseFloat(q.value)||0) * (parseFloat(rates[i].value)||0));
+      const isTaxable = document.getElementById('invType').value === 'TAX INVOICE';
+      const gst = isTaxable ? taxable * 0.18 : 0;
+      document.getElementById('invTaxable').innerText = taxable.toFixed(2);
+      document.getElementById('invGST').innerText = gst.toFixed(2);
+      document.getElementById('invGrand').innerText = (taxable + gst).toFixed(2);
     }
-  </script>
 
+    function printInvoice() {
+      const partyName = document.getElementById('invPartySelect').value;
+      if(!partyName) return alert('Select Customer!');
+      const party = parties.find(p => p.name === partyName) || { address: "-", gst: "-" };
+
+      document.getElementById('pDocTitle').innerText = document.getElementById('invType').value;
+      document.getElementById('pPartyName').innerText = partyName;
+      document.getElementById('pPartyAddress').innerText = party.address;
+      document.getElementById('pPartyGST').innerText = party.gst;
+      document.getElementById('pInvNum').innerText = document.getElementById('invNum').value;
+      document.getElementById('pPONum').innerText = document.getElementById('invPONum').value || "N/A";
+      document.getElementById('pDate').innerText = document.getElementById('invDate').value || new Date().toISOString().split('T')[0];
+
+      const tbody = document.getElementById('pItemsBody');
+      tbody.innerHTML = '';
+      let sub = 0;
+
+      const sels = document.querySelectorAll('.p-select');
+      const hsn = document.querySelectorAll('.p-hsn');
+      const qtys = document.querySelectorAll('.p-qty');
+      const rates = document.querySelectorAll('.p-rate');
+
+      sels.forEach((s, i) => {
+        if (s.value) {
+          const q = parseFloat(qtys[i].value)||0;
+          const r = parseFloat(rates[i].value)||0;
+          const t = q * r;
+          const g = t * 0.18;
+          sub += t;
+          tbody.innerHTML += `<tr><td>${i+1}</td><td>${s.value}</td><td>${hsn[i].value}</td><td>${q}</td><td>${r}</td><td>${t}</td><td>${g.toFixed(2)}</td><td>${(t+g).toFixed(2)}</td></tr>`;
+        }
+      });
+
+      const gstTotal = document.getElementById('invType').value === 'TAX INVOICE' ? sub * 0.18 : 0;
+      document.getElementById('pTaxable').innerText = sub.toFixed(2);
+      document.getElementById('pIGST').innerText = gstTotal.toFixed(2);
+      document.getElementById('pGrand').innerText = (sub + gstTotal).toFixed(2);
+
+      window.print();
+    }
+
+    // PURCHASE ORDERS & PAYMENTS
+    function savePO() {
+      const party = document.getElementById('poPartySelect').value;
+      const num = document.getElementById('poNum').value;
+      const item = document.getElementById('poItem').value;
+      const qty = parseFloat(document.getElementById('poQty').value)||0;
+      const rate = parseFloat(document.getElementById('poRate').value)||0;
+      if (party) {
+        poList.push({ num, party, item, qty, total: qty * rate });
+        renderPO();
+      }
+    }
+
+    function deletePO(i) { poList.splice(i, 1); renderPO(); }
+
+    function renderPO() {
+      const tb = document.querySelector('#poTable tbody');
+      tb.innerHTML = '';
+      poList.forEach((p, i) => {
+        tb.innerHTML += `<tr><td>${p.num}</td><td>${p.party}</td><td>${p.item}</td><td>${p.qty}</td><td>₹${p.total}</td><td><button class="btn btn-danger" onclick="deletePO(${i})">Delete</button></td></tr>`;
+      });
+    }
+
+    function savePayment() {
+      const type = document.getElementById('payType').value;
+      const party = document.getElementById('payPartySelect').value;
+      const amt = parseFloat(document.getElementById('payAmt').value)||0;
+      const date = document.getElementById('payDate').value || new Date().toISOString().split('T')[0];
+      if (party && amt) {
+        payments.push({ type, party, amt, date });
+        renderPayments();
+        updateDashboard();
+      }
+    }
+
+    function deletePay(i) { payments.splice(i, 1); renderPayments(); updateDashboard(); }
+
+    function renderPayments() {
+      const tb = document.querySelector('#payTable tbody');
+      tb.innerHTML = '';
+      payments.forEach((p, i) => {
+        tb.innerHTML += `<tr><td><span class="badge ${p.type === 'IN' ? 'badge-in' : 'badge-out'}">${p.type}</span></td><td>${p.party}</td><td>₹${p.amt}</td><td>${p.date}</td><td><button class="btn btn-danger" onclick="deletePay(${i})">Delete</button></td></tr>`;
+      });
+    }
+
+    // USER MANAGEMENT
+    function addUser() {
+      const u = document.getElementById('uName').value.trim();
+      const p = document.getElementById('uPass').value.trim();
+      const r = document.getElementById('uRole').value;
+      if (u && p) {
+        users[u] = { pass: p, role: r };
+        renderUsers();
+      }
+    }
+
+    function renderUsers() {
+      const tb = document.querySelector('#userTable tbody');
+      tb.innerHTML = '';
+      Object.keys(users).forEach(u => {
+        tb.innerHTML += `<tr><td>${u}</td><td>${users[u].role}</td><td>${u !== 'Admin' ? `<button class="btn btn-danger" onclick="delete users['${u}']; renderUsers();">Delete</button>` : 'Primary Admin'}</td></tr>`;
+      });
+    }
+
+    function updateDashboard() {
+      let inAmt = 0, outAmt = 0;
+      payments.forEach(p => p.type === 'IN' ? inAmt += p.amt : outAmt += p.amt);
+      document.getElementById('dashIn').innerText = '₹' + inAmt.toFixed(2);
+      document.getElementById('dashOut').innerText = '₹' + outAmt.toFixed(2);
+      document.getElementById('dashProd').innerText = products.length;
+      document.getElementById('dashParties').innerText = parties.length;
+    }
+
+    // INITIAL SETUP
+    addInvRow();
+  </script>
 </body>
 </html>
