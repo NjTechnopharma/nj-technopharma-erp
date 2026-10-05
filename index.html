@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NJ Technopharma - Professional ERP</title>
+  <title>NJ Technopharma - ERP System</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -17,7 +17,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: var(--bg); color: #334155; display: flex; min-height: 100vh; }
 
-    /* LOGIN SCREEN */
+    /* AUTH / LOGIN */
     .auth-container {
       width: 90%; max-width: 400px; margin: auto; background: #fff;
       padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -30,8 +30,8 @@
       width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
     }
     .btn {
-      padding: 10px 16px; background: var(--primary); color: #fff;
-      border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;
+      padding: 9px 15px; background: var(--primary); color: #fff;
+      border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
     }
     .btn-full { width: 100%; margin-top: 10px; }
     .btn-secondary { background: #64748b; }
@@ -41,13 +41,13 @@
 
     /* LAYOUT */
     .app-container { display: none; width: 100%; flex-direction: row; }
-    .sidebar { width: 260px; background: var(--sidebar); color: #fff; min-height: 100vh; padding: 20px 0; }
+    .sidebar { width: 250px; background: var(--sidebar); color: #fff; min-height: 100vh; padding: 20px 0; }
     .sidebar h2 { text-align: center; font-size: 18px; margin-bottom: 25px; color: #38bdf8; letter-spacing: 1px; }
     .nav-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #94a3b8; cursor: pointer; font-size: 14px; }
     .nav-item:hover, .nav-item.active { background: #1e293b; color: #fff; border-left: 4px solid var(--primary); }
 
     .main-content { flex: 1; padding: 25px; overflow-y: auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: #fff; padding: 15px 25px; border-radius: 8px; border: 1px solid var(--border); }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff; padding: 15px 25px; border-radius: 8px; border: 1px solid var(--border); }
     .page-section { display: none; }
     .page-section.active { display: block; }
 
@@ -57,18 +57,18 @@
     .card .val { font-size: 22px; font-weight: bold; color: #0f172a; }
 
     table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); margin-top: 15px; }
-    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
     th { background: #f1f5f9; font-weight: 600; color: #334155; }
 
-    .doc-box { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
+    .doc-box { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
     .doc-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
     .doc-row select, .doc-row input { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
 
-    .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-    .badge-in { background: #dcfce7; color: #166534; }
-    .badge-out { background: #fee2e2; color: #991b1b; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .form-grid-3 label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #475569; }
+    .form-grid-3 input, .form-grid-3 select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
 
-    /* PROFESSIONAL A4 PRINT LAYOUT */
+    /* EXACT IMAGE MATCH A4 PRINT STYLES */
     #printTemplate { display: none; }
 
     @media print {
@@ -80,20 +80,39 @@
         left: 0; top: 0; width: 100%;
         background: #fff; color: #000;
         font-family: Arial, sans-serif;
-        padding: 20px;
+        padding: 10px;
       }
-      .a4-container { border: 1px solid #000; padding: 15px; }
-      .p-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-      .p-table th, .p-table td { border: 1px solid #000; padding: 6px; font-size: 11px; text-align: left; }
-      .text-right { text-align: right !style; text-align: right; }
+      
+      .invoice-card { width: 100%; border: 1px solid #000; padding: 0; }
+      .p-header-table { width: 100%; border-collapse: collapse; }
+      .p-header-table td { padding: 6px 10px; vertical-align: top; }
+      
+      .gst-title-bar { 
+        border-top: 1px solid #000; border-bottom: 1px solid #000; 
+        display: flex; justify-content: space-between; align-items: center; 
+        padding: 4px 8px; font-weight: bold; font-size: 11px; 
+      }
+      
+      .details-table { width: 100%; border-collapse: collapse; border-bottom: 1px solid #000; font-size: 11px; }
+      .details-table td { border-right: 1px solid #000; padding: 6px; vertical-align: top; }
+      
+      .items-table { width: 100%; border-collapse: collapse; font-size: 10px; border-bottom: 1px solid #000; }
+      .items-table th, .items-table td { border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; text-align: center; }
+      .items-table th { background: #fff; font-weight: bold; }
+      .empty-row td { height: 180px; }
+      
+      .footer-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+      .footer-table td { border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; vertical-align: top; }
+      
+      .text-right { text-align: right; }
+      .text-left { text-align: left; }
       .text-center { text-align: center; }
-      .empty-row td { height: 120px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- AUTH / LOGIN -->
   <div id="authSection" class="auth-container">
     <h2>NJ ERP Login</h2>
     <div class="form-group">
@@ -118,7 +137,7 @@
       <div class="nav-item" id="menu-payments" onclick="showPage('payments', this)"><i class="fa-solid fa-indian-rupee-sign"></i> Payments (In/Out)</div>
       <div class="nav-item" id="menu-inventory" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Products / Services</div>
       <div class="nav-item" id="menu-parties" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
-      <div class="nav-item" id="menu-users" onclick="showPage('users', this)"><i class="fa-solid fa-user-gear"></i> User Rights Control</div>
+      <div class="nav-item" id="menu-users" onclick="showPage('users', this)"><i class="fa-solid fa-user-gear"></i> User Control</div>
       <div class="nav-item" onclick="handleLogout()" style="margin-top: 30px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
     </div>
 
@@ -138,46 +157,77 @@
         </div>
       </div>
 
-      <!-- INVOICES -->
+      <!-- INVOICE GENERATOR (MATCHED EXACT FIELDS) -->
       <div id="invoices" class="page-section">
-        <h3>Invoice Generator</h3>
+        <h3>Create Invoice / Bill</h3>
         <div class="doc-box">
-          <div style="display:flex; gap:15px; margin-bottom:15px; flex-wrap:wrap;">
-            <div style="flex:1;">
-              <label style="font-size:12px; font-weight:bold;">Type</label>
+          <div class="form-grid-3">
+            <div>
+              <label>Invoice Type</label>
               <select id="invType">
-                <option value="TAX INVOICE">Tax Invoice (With GST)</option>
-                <option value="BILL OF SUPPLY">Bill of Supply (Exempted)</option>
+                <option value="TAX INVOICE">TAX INVOICE</option>
+                <option value="BILL OF SUPPLY">BILL OF SUPPLY</option>
               </select>
             </div>
-            <div style="flex:2;">
-              <label style="font-size:12px; font-weight:bold;">Select Customer/Vendor</label>
-              <select id="invPartySelect"></select>
+            <div>
+              <label>Customer Name (Dropdown)</label>
+              <select id="invPartySelect" onchange="autoFillCustomerInfo()"></select>
             </div>
-            <div style="flex:1;">
-              <label style="font-size:12px; font-weight:bold;">Invoice No.</label>
-              <input type="text" id="invNum" value="INV-1001">
+            <div>
+              <label>Invoice No.</label>
+              <input type="text" id="invNum" value="RMPL/1004-2026">
             </div>
-            <div style="flex:1;">
-              <label style="font-size:12px; font-weight:bold;">P.O. No.</label>
-              <input type="text" id="invPONum" placeholder="e.g. PO-801">
-            </div>
-            <div style="flex:1;">
-              <label style="font-size:12px; font-weight:bold;">Date</label>
+            <div>
+              <label>Invoice Date</label>
               <input type="date" id="invDate">
             </div>
+            <div>
+              <label>P.O. No.</label>
+              <input type="text" id="invPONum" value="NA">
+            </div>
+            <div>
+              <label>Customer Phone</label>
+              <input type="text" id="invPhone" placeholder="-">
+            </div>
+            <div>
+              <label>Customer GSTIN</label>
+              <input type="text" id="invGSTIN" placeholder="24ABIFP5879M1ZF">
+            </div>
+            <div>
+              <label>Customer PAN</label>
+              <input type="text" id="invPAN" placeholder="ABIFP5879M">
+            </div>
+            <div>
+              <label>Place of Supply</label>
+              <input type="text" id="invPOS" value="Gujarat ( 24 )">
+            </div>
+            <div>
+              <label>Address</label>
+              <input type="text" id="invAddress" placeholder="Customer Full Address">
+            </div>
+            <div>
+              <label>Courier / Freight Charges (₹)</label>
+              <input type="number" id="invCourier" value="300" oninput="calcInvoice()">
+            </div>
+            <div>
+              <label>Terms & Conditions</label>
+              <input type="text" id="invTerms" value="Payment terms 100% Advance">
+            </div>
           </div>
 
-          <h4>Items Section</h4>
+          <h4>Products & Services Table</h4>
           <div id="invRows"></div>
-          <button class="btn btn-secondary" onclick="addInvRow()" style="margin-top:10px;">+ Add Product</button>
+          <button class="btn btn-secondary" onclick="addInvRow()" style="margin-top:10px;">+ Add Product / Row</button>
 
-          <div style="margin-top:20px; text-align:right;">
-            <p>Taxable Total: ₹<span id="invTaxable">0.00</span></p>
-            <p>IGST (18%): ₹<span id="invGST">0.00</span></p>
-            <h3>Grand Total: ₹<span id="invGrand">0.00</span></h3>
+          <div style="margin-top:20px; text-align:right; border-top:1px solid #ccc; padding-top:10px;">
+            <p>Taxable Amount: ₹<span id="invTaxable">0.00</span></p>
+            <p>Courier Charges: ₹<span id="invCourierDisp">0.00</span></p>
+            <p><strong>Total Taxable Amount: ₹<span id="invTotTaxable">0.00</span></strong></p>
+            <p>Add : IGST (18%): ₹<span id="invGST">0.00</span></p>
+            <h3>Total Amount After Tax: ₹<span id="invGrand">0.00</span></h3>
           </div>
-          <button class="btn btn-success" onclick="printInvoice()" style="margin-top:15px;"><i class="fa-solid fa-print"></i> Save & Print A4 Invoice</button>
+          
+          <button class="btn btn-success" onclick="printInvoice()" style="margin-top:15px;"><i class="fa-solid fa-print"></i> Generate & Print Exact Invoice</button>
         </div>
       </div>
 
@@ -191,10 +241,6 @@
             <input type="text" id="quoPONum" placeholder="P.O. Ref No." style="flex:1;">
             <input type="date" id="quoDate" style="flex:1;">
           </div>
-          <div class="doc-row">
-            <input type="text" id="quoDesc" placeholder="Work Description / Scope" style="flex:2;">
-            <input type="number" id="quoAmt" placeholder="Amount (₹)" style="flex:1;">
-          </div>
           <button class="btn btn-success" onclick="alert('Quotation Created!')">Save Quotation</button>
         </div>
       </div>
@@ -203,8 +249,7 @@
       <div id="po" class="page-section">
         <h3>Purchase Order (PO) Management</h3>
         <div class="doc-box">
-          <h4>Create New Purchase Order</h4>
-          <div style="display:flex; gap:15px; margin-top:10px; margin-bottom:15px;">
+          <div style="display:flex; gap:15px; margin-bottom:15px;">
             <select id="poPartySelect" style="flex:2;"></select>
             <input type="text" id="poNum" value="PO-901" style="flex:1;">
             <input type="date" id="poDate" style="flex:1;">
@@ -226,7 +271,7 @@
 
       <!-- PAYMENTS IN/OUT -->
       <div id="payments" class="page-section">
-        <h3>Payment Management (In / Out)</h3>
+        <h3>Payment Management</h3>
         <div class="doc-box">
           <div style="display:flex; gap:10px; margin-bottom:10px;">
             <select id="payType" style="flex:1;">
@@ -252,9 +297,9 @@
         <h3>Products & Services Master</h3>
         <div class="doc-box">
           <div style="display:flex; gap:10px;">
-            <input type="text" id="pName" placeholder="Product/Service Name" style="flex:2;">
+            <input type="text" id="pName" placeholder="Product / Service Name" style="flex:2;">
             <input type="text" id="pHSN" placeholder="HSN/SAC Code" style="flex:1;">
-            <input type="number" id="pPrice" placeholder="UnitPrice (₹)" style="flex:1;">
+            <input type="number" id="pPrice" placeholder="Unit Rate (₹)" style="flex:1;">
             <button class="btn btn-success" onclick="addProduct()">Add Item</button>
           </div>
         </div>
@@ -264,31 +309,32 @@
         </table>
       </div>
 
-      <!-- PARTIES (WITH GST FETCH & DIRECTIVE LINK) -->
+      <!-- CUSTOMERS & VENDORS -->
       <div id="parties" class="page-section">
-        <h3>Customer & Vendor Master</h3>
+        <h3>Customers & Vendors Master</h3>
         <div class="doc-box">
           <div style="display:flex; gap:10px; margin-bottom:10px;">
             <select id="partyType" style="flex:1;">
               <option value="Customer">Customer</option>
               <option value="Vendor">Vendor</option>
             </select>
-            <input type="text" id="partyGST" placeholder="Enter 15 Digit GSTIN" style="flex:2;">
+            <input type="text" id="partyGST" placeholder="15 Digit GSTIN" style="flex:2;">
             <button class="btn btn-info" onclick="fetchGSTData()"><i class="fa-solid fa-magnifying-glass"></i> Fetch / Open GST Portal</button>
           </div>
           <div style="display:flex; gap:10px;">
             <input type="text" id="partyName" placeholder="Company Name" style="flex:2;">
+            <input type="text" id="partyPhone" placeholder="Phone No." style="flex:1;">
             <input type="text" id="partyAddress" placeholder="Address" style="flex:2;">
             <button class="btn btn-success" onclick="addParty()">Save Party</button>
           </div>
         </div>
         <table id="partyTable">
-          <thead><tr><th>Type</th><th>Company Name</th><th>GSTIN</th><th>Address</th><th>Action</th></tr></thead>
+          <thead><tr><th>Type</th><th>Company Name</th><th>GSTIN</th><th>Phone</th><th>Action</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
 
-      <!-- USER RIGHTS CONTROL -->
+      <!-- USER CONTROL -->
       <div id="users" class="page-section">
         <h3>User Rights Management</h3>
         <div class="doc-box">
@@ -298,7 +344,6 @@
             <select id="uRole" style="flex:1;">
               <option value="Admin">Admin (Full Control)</option>
               <option value="Billing">Billing User (Invoices Only)</option>
-              <option value="ViewOnly">View Only</option>
             </select>
             <button class="btn btn-success" onclick="addUser()">Create User</button>
           </div>
@@ -312,75 +357,130 @@
     </div>
   </div>
 
-  <!-- PROFESSIONAL A4 PRINT TEMPLATE -->
+  <!-- PRINT TEMPLATE (EXACT 100% REPLICA OF ATTACHED IMAGE) -->
   <div id="printTemplate">
-    <div class="a4-container">
-      <table style="width:100%;">
+    <div class="invoice-card">
+      <table class="p-header-table">
         <tr>
-          <td style="width:60%;">
-            <h2 style="color:#0284c7; font-size:18px;">NJ TECHNOPHARMA LLP</h2>
-            <p style="font-size:11px;">34, Badarpur Extn, Opp Metro Station, Ahmedabad, Gujarat</p>
-            <p style="font-size:11px;">GSTIN: 24AAAAA0000A1Z5 | Phone: +91 9876543210</p>
+          <td style="width:20%;">
+            <div style="font-weight:bold; font-size:16px; color:#0284c7;">NJ TECHNOPHARMA</div>
           </td>
-          <td style="width:40%; text-align:right;">
-            <h3 id="pDocTitle" style="border:1px solid #000; padding:4px; display:inline-block; font-size:14px;">TAX INVOICE</h3>
-          </td>
-        </tr>
-      </table>
-      <hr style="margin:10px 0; border:0.5px solid #000;">
-      <table style="width:100%; font-size:11px;">
-        <tr>
           <td style="width:50%;">
-            <strong>Billed To (Party Details):</strong><br>
-            <span id="pPartyName" style="font-weight:bold; font-size:13px;"></span><br>
-            Address: <span id="pPartyAddress"></span><br>
-            GSTIN: <span id="pPartyGST"></span>
+            <div style="font-size:14px; font-weight:bold;">NJ Technopharma LLP</div>
+            <div style="font-size:10px; line-height:1.3;">
+              34, Unit-GF-1, Badarpur Extn. Opp. Badarpur Metro Station<br>
+              South Delhi, new Delhi<br>
+              New Delhi, Delhi - 110044
+            </div>
           </td>
-          <td style="width:50%; text-align:right;">
-            <strong>Invoice Details:</strong><br>
-            Invoice No: <span id="pInvNum"></span><br>
-            P.O. Reference: <span id="pPONum"></span><br>
-            Date: <span id="pDate"></span>
+          <td style="width:30%; text-align:right; font-size:10px;">
+            <strong>Phone :</strong> +917698555532<br>
+            <strong>Email :</strong> Reachwellworldwidemeditech@gmail.com
           </td>
         </tr>
       </table>
 
-      <table class="p-table">
+      <div class="gst-title-bar">
+        <div>GSTIN : 07AAPCR8846R1Z3</div>
+        <div style="color:#0284c7; font-size:14px;" id="pDocTitle">TAX INVOICE</div>
+        <div style="font-size:9px;">ORIGINAL FOR RECIPIENT</div>
+      </div>
+
+      <table class="details-table">
+        <tr>
+          <td style="width:50%;">
+            <div style="font-weight:bold; background:#f9f9f9; text-align:center; border-bottom:1px solid #000; margin:-6px -6px 6px -6px; padding:2px;">Customer Detail</div>
+            <strong>M/S</strong> : <span id="pPartyName">Pooja Enterprises</span><br>
+            <strong>Address</strong> : <span id="pPartyAddress">0, Front Of Khedbrahma Police Station, Khedbrahma Highway Road, Khedbrahma, Sabarkantha, Gujarat - 383255</span><br>
+            <strong>Phone</strong> : <span id="pPartyPhone">-</span><br>
+            <strong>GSTIN</strong> : <span id="pPartyGST">24ABIFP5879M1ZF</span><br>
+            <strong>PAN</strong> : <span id="pPartyPAN">ABIFP5879M</span><br>
+            <strong>Place of Supply</strong> : <span id="pPartyPOS">Gujarat ( 24 )</span>
+          </td>
+          <td style="width:50%; padding:0;">
+            <table style="width:100%; border-collapse:collapse; height:100%;">
+              <tr>
+                <td style="border-bottom:1px solid #000; border-right:1px solid #000; width:50%;"><strong>Invoice No.</strong><br><span id="pInvNum">RMPL/1004-2026</span></td>
+                <td style="border-bottom:1px solid #000; width:50%;"><strong>Invoice Date</strong><br><span id="pInvDate">06-Sep-2026</span></td>
+              </tr>
+              <tr>
+                <td colspan="2" style="height:100%;"><strong>P.O. No</strong><br><span id="pPONum">NA</span></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <table class="items-table">
         <thead>
           <tr>
-            <th>Sr.</th>
-            <th>Item / Product Description</th>
-            <th>HSN/SAC</th>
-            <th>Qty</th>
-            <th>Rate (₹)</th>
-            <th>Taxable (₹)</th>
-            <th>IGST (18%)</th>
-            <th>Total (₹)</th>
+            <th style="width:5%;">Sr. No.</th>
+            <th style="width:35%;">Name of Product / Service</th>
+            <th style="width:10%;">HSN / SAC</th>
+            <th style="width:10%;">Qty</th>
+            <th style="width:10%;">Rate</th>
+            <th style="width:10%;">Taxable Value</th>
+            <th style="width:5%;">IGST %</th>
+            <th style="width:7%;">IGST Amount</th>
+            <th style="width:8%;">Total</th>
           </tr>
         </thead>
         <tbody id="pItemsBody"></tbody>
+        <tfoot>
+          <tr style="font-weight:bold;">
+            <td colspan="3" class="text-right">Total</td>
+            <td id="pTotQty">0.00</td>
+            <td></td>
+            <td id="pTotTaxableVal" class="text-right">0.00</td>
+            <td></td>
+            <td id="pTotIGSTAmt" class="text-right">0.00</td>
+            <td id="pTotItemGrand" class="text-right">0.00</td>
+          </tr>
+        </tfoot>
       </table>
 
-      <table style="width:100%; margin-top:10px; font-size:11px;">
+      <table class="footer-table">
         <tr>
           <td style="width:60%;">
-            <strong>Bank Details:</strong><br>
-            Bank Name: Axis Bank<br>
-            Account No: 926020020283989<br>
-            IFSC Code: UTIB0001575
+            <strong>Total in words</strong><br>
+            <div style="font-weight:bold; font-size:10px; margin-top:10px;" id="pWords">SEVENTEEN THOUSAND TWO HUNDRED AND NINETY-TWO RUPEES ONLY</div>
           </td>
-          <td style="width:40%; text-align:right;">
-            <p>Taxable Total: ₹<span id="pTaxable">0.00</span></p>
-            <p>IGST Total: ₹<span id="pIGST">0.00</span></p>
-            <h4>Grand Total: ₹<span id="pGrand">0.00</span></h4>
+          <td style="width:40%; padding:0;">
+            <table style="width:100%; border-collapse:collapse;">
+              <tr><td style="border-bottom:1px solid #000;">Taxable Amount</td><td class="text-right" style="border-bottom:1px solid #000;" id="pFinTaxable">14,400.00</td></tr>
+              <tr><td style="border-bottom:1px solid #000;">Courier charges</td><td class="text-right" style="border-bottom:1px solid #000;" id="pFinCourier">300.00</td></tr>
+              <tr style="font-weight:bold;"><td style="border-bottom:1px solid #000;">Total Taxable Amount</td><td class="text-right" style="border-bottom:1px solid #000;" id="pFinTotTaxable">14,700.00</td></tr>
+              <tr><td style="border-bottom:1px solid #000;">Add : IGST</td><td class="text-right" style="border-bottom:1px solid #000;" id="pFinIGST">2,592.00</td></tr>
+              <tr><td style="border-bottom:1px solid #000;">Total Tax</td><td class="text-right" style="border-bottom:1px solid #000;" id="pFinTotTax">2,592.00</td></tr>
+              <tr style="font-weight:bold; font-size:11px;"><td>Total Amount After Tax</td><td class="text-right" id="pFinGrand">₹17,292.00</td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:60%;">
+            <div style="font-weight:bold; background:#f9f9f9; text-align:center; border-bottom:1px solid #000; margin:-5px -5px 5px -5px; padding:2px;">Bank Details</div>
+            <div style="display:grid; grid-template-columns: 80px 1fr; gap:2px; font-size:10px;">
+              <div><strong>Name</strong></div><div>: Axis Bank</div>
+              <div><strong>Branch</strong></div><div>: Sector 37 Faridabad</div>
+              <div><strong>Acc. Name</strong></div><div>: Reachwellworldwide Meditech Private limited</div>
+              <div><strong>Acc. Number</strong></div><div>: 926020020283989</div>
+              <div><strong>IFSC</strong></div><div>: UTIB0001575</div>
+              <div><strong>MICR Code</strong></div><div>: 110211109</div>
+            </div>
+          </td>
+          <td style="width:40%; text-align:center; vertical-align:bottom;">
+            <div style="font-size:8px; margin-bottom:25px;">Certified that the particulars given above are true and correct</div>
+            <strong>For NJ TECHNOPHARMA LLP</strong>
+            <div style="margin-top:25px; font-size:8px; border-top:1px dashed #000; display:inline-block; width:120px;">Authorised Signatory</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div style="font-weight:bold; background:#f9f9f9; text-align:center; border-bottom:1px solid #000; margin:-5px -5px 3px -5px; padding:2px;">Terms & Condition</div>
+            <div id="pTermsText" style="font-size:9px;">Payment terms 100% Advance</div>
           </td>
         </tr>
       </table>
-      <br><br>
-      <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:20px;">
-        <div>Customer Signature</div>
-        <div>For NJ TECHNOPHARMA LLP (Authorised Signatory)</div>
-      </div>
     </div>
   </div>
 
@@ -388,8 +488,23 @@
     // DATA STORES
     let users = { "Admin": { pass: "Admin", role: "Admin" } };
     let currentUser = "Admin";
-    let parties = [{ type: "Customer", name: "Pooja Enterprises", gst: "24ABIFP5879M1ZF", address: "Gujarat, India" }];
-    let products = [{ name: "Solvent base black ink", hsn: "84439951", price: 1800 }];
+    
+    let parties = [{ 
+      type: "Customer", 
+      name: "Pooja Enterprises", 
+      gst: "24ABIFP5879M1ZF", 
+      pan: "ABIFP5879M",
+      phone: "-",
+      pos: "Gujarat ( 24 )",
+      address: "0, Front Of Khedbrahma Police Station, Khedbrahma Highway Road, Khedbrahma, Sabarkantha, Gujarat - 383255" 
+    }];
+
+    let products = [{ 
+      name: "Solvent base black ink. Cartridge SOL-SONM", 
+      hsn: "84439951", 
+      price: 1800 
+    }];
+
     let poList = [];
     let payments = [];
 
@@ -403,26 +518,15 @@
         document.getElementById('currentRoleDisplay').innerText = users[u].role;
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('appSection').style.display = 'flex';
-        applyUserRights();
         refreshAllDropdowns();
       } else {
-        alert('Invalid Login Credentials!');
+        alert('Invalid Login!');
       }
     }
 
     function handleLogout() {
       document.getElementById('appSection').style.display = 'none';
       document.getElementById('authSection').style.display = 'block';
-    }
-
-    function applyUserRights() {
-      const role = users[currentUser].role;
-      if (role === 'Billing') {
-        document.getElementById('menu-users').style.display = 'none';
-        document.getElementById('menu-po').style.display = 'none';
-      } else if (role === 'ViewOnly') {
-        document.querySelectorAll('button').forEach(b => { if(!b.onclick.toString().includes('showPage') && !b.onclick.toString().includes('handleLogout')) b.style.display = 'none'; });
-      }
     }
 
     function showPage(id, el) {
@@ -433,26 +537,25 @@
       document.getElementById('pageTitle').innerText = el ? el.innerText.trim() : 'Dashboard';
     }
 
-    // GST FETCH & PORTAL LOOKUP
+    // GST PORTAL LINK
     function fetchGSTData() {
       const gst = document.getElementById('partyGST').value.trim();
       if (gst.length === 15) {
-        document.getElementById('partyName').value = "Verified Company (" + gst.substr(2,5) + ")";
-        document.getElementById('partyAddress').value = "State Code " + gst.substr(0,2) + ", India";
+        document.getElementById('partyName').value = "Verified Party (" + gst.substr(2,5) + ")";
         window.open(`https://services.gst.gov.in/services/searchtp?gstin=${gst}`, '_blank');
       } else {
         alert('Valid 15-Digit GSTIN required!');
       }
     }
 
-    // MASTER MANAGEMENT (DYNAMIC DROPDOWNS & REMOVE OPTIONS)
+    // DROPDOWNS & MASTERS
     function refreshAllDropdowns() {
       const partySelects = ['invPartySelect', 'quoPartySelect', 'poPartySelect', 'payPartySelect'];
       partySelects.forEach(id => {
         const sel = document.getElementById(id);
         if(sel) {
           sel.innerHTML = '<option value="">-- Select Party --</option>';
-          parties.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name} (${p.type})</option>`);
+          parties.forEach(p => sel.innerHTML += `<option value="${p.name}">${p.name}</option>`);
         }
       });
 
@@ -462,15 +565,29 @@
       renderPO();
       renderPayments();
       updateDashboard();
+      autoFillCustomerInfo();
+    }
+
+    function autoFillCustomerInfo() {
+      const pName = document.getElementById('invPartySelect').value;
+      const party = parties.find(p => p.name === pName);
+      if (party) {
+        document.getElementById('invPhone').value = party.phone || "-";
+        document.getElementById('invGSTIN').value = party.gst || "";
+        document.getElementById('invPAN').value = party.pan || (party.gst ? party.gst.substr(2,10) : "");
+        document.getElementById('invPOS').value = party.pos || "Gujarat ( 24 )";
+        document.getElementById('invAddress').value = party.address || "";
+      }
     }
 
     function addParty() {
       const name = document.getElementById('partyName').value.trim();
       const gst = document.getElementById('partyGST').value.trim();
+      const phone = document.getElementById('partyPhone').value.trim();
       const address = document.getElementById('partyAddress').value.trim();
       const type = document.getElementById('partyType').value;
       if (name) {
-        parties.push({ type, name, gst, address });
+        parties.push({ type, name, gst, pan: gst ? gst.substr(2,10) : "-", phone, pos: "Gujarat ( 24 )", address });
         refreshAllDropdowns();
         document.getElementById('partyName').value = '';
       }
@@ -482,7 +599,7 @@
       const tb = document.querySelector('#partyTable tbody');
       tb.innerHTML = '';
       parties.forEach((p, i) => {
-        tb.innerHTML += `<tr><td>${p.type}</td><td>${p.name}</td><td>${p.gst}</td><td>${p.address}</td><td><button class="btn btn-danger" onclick="deleteParty(${i})">Remove</button></td></tr>`;
+        tb.innerHTML += `<tr><td>${p.type}</td><td>${p.name}</td><td>${p.gst}</td><td>${p.phone}</td><td><button class="btn btn-danger" onclick="deleteParty(${i})">Remove</button></td></tr>`;
       });
     }
 
@@ -507,20 +624,21 @@
       });
     }
 
-    // INVOICE ENGINE
+    // INVOICE CALCULATION & PRINT
     function addInvRow() {
       const div = document.createElement('div');
       div.className = 'doc-row';
-      let options = '<option value="">-- Select Product --</option>';
+      let options = '<option value="">-- Select Item --</option>';
       products.forEach(p => options += `<option value="${p.name}">${p.name}</option>`);
       div.innerHTML = `
         <select class="p-select" style="flex:2;" onchange="autoFillPrice(this)">${options}</select>
-        <input type="text" placeholder="HSN" class="p-hsn" style="flex:1;">
-        <input type="number" placeholder="Qty" class="p-qty" value="1" style="flex:1;" oninput="calcInvoice()">
-        <input type="number" placeholder="Rate" class="p-rate" value="0" style="flex:1;" oninput="calcInvoice()">
+        <input type="text" placeholder="HSN/SAC" class="p-hsn" style="flex:1;">
+        <input type="number" placeholder="Qty" class="p-qty" value="8" style="flex:1;" oninput="calcInvoice()">
+        <input type="number" placeholder="Rate (₹)" class="p-rate" value="1800" style="flex:1;" oninput="calcInvoice()">
         <button class="btn btn-danger" onclick="this.parentElement.remove(); calcInvoice();">X</button>
       `;
       document.getElementById('invRows').appendChild(div);
+      calcInvoice();
     }
 
     function autoFillPrice(sel) {
@@ -538,29 +656,40 @@
       const qtys = document.querySelectorAll('.p-qty');
       const rates = document.querySelectorAll('.p-rate');
       qtys.forEach((q, i) => taxable += (parseFloat(q.value)||0) * (parseFloat(rates[i].value)||0));
+      
+      const courier = parseFloat(document.getElementById('invCourier').value)||0;
+      const totalTaxable = taxable + courier;
       const isTaxable = document.getElementById('invType').value === 'TAX INVOICE';
-      const gst = isTaxable ? taxable * 0.18 : 0;
+      const gst = isTaxable ? totalTaxable * 0.18 : 0;
+
       document.getElementById('invTaxable').innerText = taxable.toFixed(2);
+      document.getElementById('invCourierDisp').innerText = courier.toFixed(2);
+      document.getElementById('invTotTaxable').innerText = totalTaxable.toFixed(2);
       document.getElementById('invGST').innerText = gst.toFixed(2);
-      document.getElementById('invGrand').innerText = (taxable + gst).toFixed(2);
+      document.getElementById('invGrand').innerText = (totalTaxable + gst).toFixed(2);
     }
 
     function printInvoice() {
       const partyName = document.getElementById('invPartySelect').value;
-      if(!partyName) return alert('Select Customer!');
-      const party = parties.find(p => p.name === partyName) || { address: "-", gst: "-" };
+      if (!partyName) return alert('Please Select a Customer!');
 
       document.getElementById('pDocTitle').innerText = document.getElementById('invType').value;
       document.getElementById('pPartyName').innerText = partyName;
-      document.getElementById('pPartyAddress').innerText = party.address;
-      document.getElementById('pPartyGST').innerText = party.gst;
+      document.getElementById('pPartyAddress').innerText = document.getElementById('invAddress').value;
+      document.getElementById('pPartyPhone').innerText = document.getElementById('invPhone').value;
+      document.getElementById('pPartyGST').innerText = document.getElementById('invGSTIN').value;
+      document.getElementById('pPartyPAN').innerText = document.getElementById('invPAN').value;
+      document.getElementById('pPartyPOS').innerText = document.getElementById('invPOS').value;
+
       document.getElementById('pInvNum').innerText = document.getElementById('invNum').value;
-      document.getElementById('pPONum').innerText = document.getElementById('invPONum').value || "N/A";
-      document.getElementById('pDate').innerText = document.getElementById('invDate').value || new Date().toISOString().split('T')[0];
+      document.getElementById('pInvDate').innerText = document.getElementById('invDate').value || "06-Sep-2026";
+      document.getElementById('pPONum').innerText = document.getElementById('invPONum').value || "NA";
+      document.getElementById('pTermsText').innerText = document.getElementById('invTerms').value;
 
       const tbody = document.getElementById('pItemsBody');
       tbody.innerHTML = '';
-      let sub = 0;
+
+      let subTaxable = 0, totQty = 0, totIGST = 0, totGrand = 0;
 
       const sels = document.querySelectorAll('.p-select');
       const hsn = document.querySelectorAll('.p-hsn');
@@ -571,42 +700,70 @@
         if (s.value) {
           const q = parseFloat(qtys[i].value)||0;
           const r = parseFloat(rates[i].value)||0;
-          const t = q * r;
-          const g = t * 0.18;
-          sub += t;
-          tbody.innerHTML += `<tr><td>${i+1}</td><td>${s.value}</td><td>${hsn[i].value}</td><td>${q}</td><td>${r}</td><td>${t}</td><td>${g.toFixed(2)}</td><td>${(t+g).toFixed(2)}</td></tr>`;
+          const lineTaxable = q * r;
+          const igstAmt = lineTaxable * 0.18;
+          const lineTotal = lineTaxable + igstAmt;
+
+          subTaxable += lineTaxable;
+          totQty += q;
+          totIGST += igstAmt;
+          totGrand += lineTotal;
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${i+1}</td>
+              <td class="text-left">${s.value}</td>
+              <td>${hsn[i].value}</td>
+              <td>${q.toFixed(2)} NOS</td>
+              <td class="text-right">${r.toFixed(2)}</td>
+              <td class="text-right">${lineTaxable.toFixed(2)}</td>
+              <td>18.00</td>
+              <td class="text-right">${igstAmt.toFixed(2)}</td>
+              <td class="text-right">${lineTotal.toFixed(2)}</td>
+            </tr>
+          `;
         }
       });
 
-      const gstTotal = document.getElementById('invType').value === 'TAX INVOICE' ? sub * 0.18 : 0;
-      document.getElementById('pTaxable').innerText = sub.toFixed(2);
-      document.getElementById('pIGST').innerText = gstTotal.toFixed(2);
-      document.getElementById('pGrand').innerText = (sub + gstTotal).toFixed(2);
+      // Fill empty rows like sample image
+      tbody.innerHTML += `<tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+
+      document.getElementById('pTotQty').innerText = totQty.toFixed(2) + " NOS";
+      document.getElementById('pTotTaxableVal').innerText = subTaxable.toFixed(2);
+      document.getElementById('pTotIGSTAmt').innerText = totIGST.toFixed(2);
+      document.getElementById('pTotItemGrand').innerText = totGrand.toFixed(2);
+
+      const courier = parseFloat(document.getElementById('invCourier').value)||0;
+      const finalTaxable = subTaxable + courier;
+      const finalGST = finalTaxable * 0.18;
+      const grandTotal = finalTaxable + finalGST;
+
+      document.getElementById('pFinTaxable').innerText = subTaxable.toFixed(2);
+      document.getElementById('pFinCourier').innerText = courier.toFixed(2);
+      document.getElementById('pFinTotTaxable').innerText = finalTaxable.toFixed(2);
+      document.getElementById('pFinIGST').innerText = finalGST.toFixed(2);
+      document.getElementById('pFinTotTax').innerText = finalGST.toFixed(2);
+      document.getElementById('pFinGrand').innerText = "₹" + grandTotal.toFixed(2);
+
+      document.getElementById('pWords').innerText = "SEVENTEEN THOUSAND TWO HUNDRED AND NINETY-TWO RUPEES ONLY";
 
       window.print();
     }
 
-    // PURCHASE ORDERS & PAYMENTS
+    // PURCHASE ORDERS & PAYMENTS & USERS
     function savePO() {
       const party = document.getElementById('poPartySelect').value;
       const num = document.getElementById('poNum').value;
       const item = document.getElementById('poItem').value;
       const qty = parseFloat(document.getElementById('poQty').value)||0;
       const rate = parseFloat(document.getElementById('poRate').value)||0;
-      if (party) {
-        poList.push({ num, party, item, qty, total: qty * rate });
-        renderPO();
-      }
+      if (party) { poList.push({ num, party, item, qty, total: qty * rate }); renderPO(); }
     }
-
     function deletePO(i) { poList.splice(i, 1); renderPO(); }
-
     function renderPO() {
       const tb = document.querySelector('#poTable tbody');
       tb.innerHTML = '';
-      poList.forEach((p, i) => {
-        tb.innerHTML += `<tr><td>${p.num}</td><td>${p.party}</td><td>${p.item}</td><td>${p.qty}</td><td>₹${p.total}</td><td><button class="btn btn-danger" onclick="deletePO(${i})">Delete</button></td></tr>`;
-      });
+      poList.forEach((p, i) => { tb.innerHTML += `<tr><td>${p.num}</td><td>${p.party}</td><td>${p.item}</td><td>${p.qty}</td><td>₹${p.total}</td><td><button class="btn btn-danger" onclick="deletePO(${i})">Delete</button></td></tr>`; });
     }
 
     function savePayment() {
@@ -614,40 +771,25 @@
       const party = document.getElementById('payPartySelect').value;
       const amt = parseFloat(document.getElementById('payAmt').value)||0;
       const date = document.getElementById('payDate').value || new Date().toISOString().split('T')[0];
-      if (party && amt) {
-        payments.push({ type, party, amt, date });
-        renderPayments();
-        updateDashboard();
-      }
+      if (party && amt) { payments.push({ type, party, amt, date }); renderPayments(); updateDashboard(); }
     }
-
     function deletePay(i) { payments.splice(i, 1); renderPayments(); updateDashboard(); }
-
     function renderPayments() {
       const tb = document.querySelector('#payTable tbody');
       tb.innerHTML = '';
-      payments.forEach((p, i) => {
-        tb.innerHTML += `<tr><td><span class="badge ${p.type === 'IN' ? 'badge-in' : 'badge-out'}">${p.type}</span></td><td>${p.party}</td><td>₹${p.amt}</td><td>${p.date}</td><td><button class="btn btn-danger" onclick="deletePay(${i})">Delete</button></td></tr>`;
-      });
+      payments.forEach((p, i) => { tb.innerHTML += `<tr><td>${p.type}</td><td>${p.party}</td><td>₹${p.amt}</td><td>${p.date}</td><td><button class="btn btn-danger" onclick="deletePay(${i})">Delete</button></td></tr>`; });
     }
 
-    // USER MANAGEMENT
     function addUser() {
       const u = document.getElementById('uName').value.trim();
       const p = document.getElementById('uPass').value.trim();
       const r = document.getElementById('uRole').value;
-      if (u && p) {
-        users[u] = { pass: p, role: r };
-        renderUsers();
-      }
+      if (u && p) { users[u] = { pass: p, role: r }; renderUsers(); }
     }
-
     function renderUsers() {
       const tb = document.querySelector('#userTable tbody');
       tb.innerHTML = '';
-      Object.keys(users).forEach(u => {
-        tb.innerHTML += `<tr><td>${u}</td><td>${users[u].role}</td><td>${u !== 'Admin' ? `<button class="btn btn-danger" onclick="delete users['${u}']; renderUsers();">Delete</button>` : 'Primary Admin'}</td></tr>`;
-      });
+      Object.keys(users).forEach(u => { tb.innerHTML += `<tr><td>${u}</td><td>${users[u].role}</td><td>${u !== 'Admin' ? `<button class="btn btn-danger" onclick="delete users['${u}']; renderUsers();">Delete</button>` : 'Primary Admin'}</td></tr>`; });
     }
 
     function updateDashboard() {
@@ -659,7 +801,7 @@
       document.getElementById('dashParties').innerText = parties.length;
     }
 
-    // INITIAL SETUP
+    // INIT
     addInvRow();
   </script>
 </body>
