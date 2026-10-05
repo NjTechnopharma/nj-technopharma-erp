@@ -71,6 +71,12 @@
 
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
 
+    .badge-role { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .badge-admin { background: #dbeafe; color: #1e40af; }
+    .badge-billing { background: #fef3c7; color: #92400e; }
+    .badge-inventory { background: #dcfce7; color: #166534; }
+    .badge-view { background: #f3f4f6; color: #374151; }
+
     @media print {
       .sidebar, .header, .btn, .no-print { display: none !important; }
       .main-content { padding: 0; }
@@ -101,28 +107,28 @@
   <div id="appSection" class="app-container">
     <div class="sidebar">
       <h2>NJ TECHNOPHARMA</h2>
-      <div class="nav-item active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
-      <div class="nav-item" onclick="showPage('invoices', this)"><i class="fa-solid fa-file-invoice"></i> Invoices / Billing</div>
-      <div class="nav-item" onclick="showPage('quotations', this)"><i class="fa-solid fa-file-signature"></i> Quotations</div>
-      <div class="nav-item" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</div>
-      <div class="nav-item" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
-      <div class="nav-item" onclick="showPage('usermanagement', this)"><i class="fa-solid fa-user-gear"></i> User Management</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard', this)"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
+      <div class="nav-item" id="nav-invoices" onclick="showPage('invoices', this)"><i class="fa-solid fa-file-invoice"></i> Invoices / Billing</div>
+      <div class="nav-item" id="nav-quotations" onclick="showPage('quotations', this)"><i class="fa-solid fa-file-signature"></i> Quotations</div>
+      <div class="nav-item" id="nav-inventory" onclick="showPage('inventory', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</div>
+      <div class="nav-item" id="nav-parties" onclick="showPage('parties', this)"><i class="fa-solid fa-address-book"></i> Customers & Vendors</div>
+      <div class="nav-item" id="nav-usermanagement" onclick="showPage('usermanagement', this)"><i class="fa-solid fa-user-gear"></i> User Rights & Control</div>
       <div class="nav-item" onclick="handleLogout()" style="margin-top: 50px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
     </div>
 
     <div class="main-content">
       <div class="header">
         <h2 id="pageTitle">Dashboard</h2>
-        <div>Logged in as: <strong id="userDisplay">Admin</strong></div>
+        <div>Logged in as: <strong id="userDisplay">Admin</strong> (<span id="userRoleDisplay" style="color:#0d6efd;">Admin</span>)</div>
       </div>
 
       <!-- DASHBOARD -->
       <div id="dashboard" class="page-section active">
         <div class="grid">
-          <div class="card"><h4>TOTAL INVOICES</h4><div class="val" id="statInvoices">12</div></div>
-          <div class="card"><h4>QUOTATIONS GENERATED</h4><div class="val" id="statQuotations">5</div></div>
-          <div class="card"><h4>CUSTOMERS / VENDORS</h4><div class="val" id="statParties">2</div></div>
-          <div class="card"><h4>ACTIVE USERS</h4><div class="val" id="statUsers">2</div></div>
+          <div class="card"><h4>TOTAL INVOICES</h4><div class="val">12</div></div>
+          <div class="card"><h4>QUOTATIONS GENERATED</h4><div class="val">5</div></div>
+          <div class="card"><h4>CUSTOMERS / VENDORS</h4><div class="val">2</div></div>
+          <div class="card"><h4>ACTIVE USERS</h4><div class="val" id="statUsers">1</div></div>
         </div>
         <h3>System Activity Log</h3>
         <table>
@@ -200,8 +206,6 @@
       <!-- CUSTOMERS & VENDORS -->
       <div id="parties" class="page-section">
         <h3>Customers & Vendors Directory</h3>
-        <p style="margin-bottom:15px; color:#64748b;">Add and manage Customer & Vendor details including GST No, Address, and Contact Name.</p>
-
         <div class="doc-box">
           <h4>Add New Customer / Vendor</h4>
           <div class="form-grid" style="margin-top:15px;">
@@ -263,29 +267,78 @@
         </table>
       </div>
 
-      <!-- USER MANAGEMENT -->
+      <!-- USER MANAGEMENT & ACCESS RIGHTS -->
       <div id="usermanagement" class="page-section">
-        <h3>User Management (Admin Control)</h3>
-        <p style="margin-bottom:15px; color:#64748b;">Create and manage system login User IDs and Passwords.</p>
+        <h3>User Management & Access Control</h3>
+        <p style="margin-bottom:15px; color:#64748b;">Create login accounts, define Access Rights, and set System Limitations for users.</p>
         
-        <div class="doc-box" style="max-width:500px; margin-bottom:20px;">
-          <h4>Create New User Credential</h4>
-          <div class="form-group" style="margin-top:10px;">
-            <label>New User Name</label>
-            <input type="text" id="newUsername" placeholder="e.g. Staff1">
+        <div class="doc-box">
+          <h4>Create User Credential & Assign Access Rights</h4>
+          <div class="form-grid" style="margin-top:15px;">
+            <div class="form-group">
+              <label>User Name</label>
+              <input type="text" id="newUsername" placeholder="e.g. Rahul_Billing">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="newPassword" placeholder="Enter Password">
+            </div>
+            <div class="form-group">
+              <label>Assign Access Role / Rights</label>
+              <select id="newRole">
+                <option value="Admin">Admin (Full Control - All Access)</option>
+                <option value="Billing">Billing Staff (Invoices & Quotations Only)</option>
+                <option value="Inventory">Inventory Manager (Stock & Products Only)</option>
+                <option value="ViewOnly">View Only User (No Edit / No Create)</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label>New Password</label>
-            <input type="password" id="newPassword" placeholder="Enter Password">
-          </div>
-          <button class="btn btn-success" onclick="createUser()">Save User Credential</button>
+          <button class="btn btn-success" onclick="createUser()">Create User Account</button>
         </div>
 
-        <h4>Existing Users</h4>
-        <table id="userTable">
-          <thead><tr><th>User Name</th><th>Status</th><th>Action</th></tr></thead>
+        <h4 style="margin-top:30px;">Access Limitations Reference Chart</h4>
+        <table style="margin-bottom:25px;">
+          <thead>
+            <tr>
+              <th>Role Type</th>
+              <th>Allowed Sections (Rights)</th>
+              <th>System Limitations (Restrictions)</th>
+            </tr>
+          </thead>
           <tbody>
-            <tr><td>Admin</td><td>Active (Primary)</td><td><span style="color:#64748b;">System</span></td></tr>
+            <tr>
+              <td><span class="badge-role badge-admin">Admin</span></td>
+              <td>Dashboard, Invoices, Quotations, Inventory, Parties, User Rights</td>
+              <td>None (Full Administrator Access)</td>
+            </tr>
+            <tr>
+              <td><span class="badge-role badge-billing">Billing Staff</span></td>
+              <td>Invoices / Billing, Quotations, Customer Directory</td>
+              <td>Cannot access Inventory Stock settings or User Management</td>
+            </tr>
+            <tr>
+              <td><span class="badge-role badge-inventory">Inventory Manager</span></td>
+              <td>Inventory Stock & Products, Vendors Directory</td>
+              <td>Cannot access Billing/Invoices or User Management</td>
+            </tr>
+            <tr>
+              <td><span class="badge-role badge-view">View Only</span></td>
+              <td>Dashboard & Overview Read-Only</td>
+              <td>Cannot add, edit, or print any transaction/document</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Existing Users & Rights</h4>
+        <table id="userTable">
+          <thead><tr><th>User Name</th><th>Assigned Role</th><th>Access Rights Summary</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Admin</td>
+              <td><span class="badge-role badge-admin">Admin</span></td>
+              <td>Full Administrator Access</td>
+              <td><span style="color:#64748b;">Primary Admin</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -294,22 +347,53 @@
   </div>
 
   <script>
-    let userDatabase = { "Admin": "admin" };
+    // Users database with credentials & assigned roles
+    let userDatabase = {
+      "Admin": { pass: "admin", role: "Admin" }
+    };
 
     function handleLogin() {
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
       const alertBox = document.getElementById('alertBox');
 
-      if (userDatabase[user] && userDatabase[user] === pass) {
+      if (userDatabase[user] && userDatabase[user].pass === pass) {
         alertBox.style.display = 'none';
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('appSection').style.display = 'flex';
+        
+        const role = userDatabase[user].role;
         document.getElementById('userDisplay').innerText = user;
+        document.getElementById('userRoleDisplay').innerText = role;
+
+        // Apply Module Permissions / Limitations
+        applyUserRights(role);
+
       } else {
         alertBox.innerText = 'Invalid Username or Password!';
         alertBox.style.display = 'block';
       }
+    }
+
+    function applyUserRights(role) {
+      // Show all sidebar items by default
+      const navs = ['dashboard', 'invoices', 'quotations', 'inventory', 'parties', 'usermanagement'];
+      navs.forEach(n => document.getElementById('nav-' + n).style.display = 'flex');
+
+      // Apply Restrictions based on Role
+      if (role === 'Billing') {
+        document.getElementById('nav-inventory').style.display = 'none';
+        document.getElementById('nav-usermanagement').style.display = 'none';
+      } else if (role === 'Inventory') {
+        document.getElementById('nav-invoices').style.display = 'none';
+        document.getElementById('nav-quotations').style.display = 'none';
+        document.getElementById('nav-usermanagement').style.display = 'none';
+      } else if (role === 'ViewOnly') {
+        document.getElementById('nav-usermanagement').style.display = 'none';
+      }
+
+      // Default to Dashboard
+      showPage('dashboard', document.getElementById('nav-dashboard'));
     }
 
     function handleLogout() {
@@ -323,8 +407,8 @@
       document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
-      element.classList.add('active');
-      document.getElementById('pageTitle').innerText = element.innerText.trim();
+      if (element) element.classList.add('active');
+      document.getElementById('pageTitle').innerText = element ? element.innerText.trim() : 'Dashboard';
     }
 
     // Invoice Logic
@@ -405,30 +489,48 @@
       }
     }
 
-    // User Creation Logic
+    // User Creation Logic with Roles & Limitations
     function createUser() {
       const u = document.getElementById('newUsername').value.trim();
       const p = document.getElementById('newPassword').value.trim();
+      const r = document.getElementById('newRole').value;
 
       if (!u || !p) {
         alert("Please enter both User Name and Password!");
         return;
       }
 
-      userDatabase[u] = p;
+      userDatabase[u] = { pass: p, role: r };
+
+      let badgeClass = 'badge-admin';
+      let summary = 'Full Administrator Access';
+
+      if (r === 'Billing') { badgeClass = 'badge-billing'; summary = 'Invoices & Quotations Only'; }
+      else if (r === 'Inventory') { badgeClass = 'badge-inventory'; summary = 'Stock & Inventory Only'; }
+      else if (r === 'ViewOnly') { badgeClass = 'badge-view'; summary = 'Read-Only Access'; }
 
       const tbody = document.querySelector('#userTable tbody');
       const row = tbody.insertRow();
-      row.innerHTML = `<td>${u}</td><td>Active</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteUser('${u}', this)">Delete</button></td>`;
+      row.innerHTML = `
+        <td>${u}</td>
+        <td><span class="badge-role ${badgeClass}">${r}</span></td>
+        <td>${summary}</td>
+        <td><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteUser('${u}', this)">Delete</button></td>
+      `;
 
       document.getElementById('newUsername').value = '';
       document.getElementById('newPassword').value = '';
-      alert(`User credential '${u}' created successfully!`);
+      
+      // Update stats
+      document.getElementById('statUsers').innerText = Object.keys(userDatabase).length;
+
+      alert(`User account '${u}' created with '${r}' Role & Limitations!`);
     }
 
     function deleteUser(username, btn) {
       delete userDatabase[username];
       btn.closest('tr').remove();
+      document.getElementById('statUsers').innerText = Object.keys(userDatabase).length;
     }
   </script>
 
